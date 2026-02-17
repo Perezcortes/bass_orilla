@@ -71,7 +71,7 @@ export default function Home() {
 
   const brands = [
     { name: 'Googan Squad', src: 'marcas/googan_logo.jpg' },
-    { name: 'Yum', src: '/logo_yum.png' },
+    { name: 'Yum', src: 'marcas/logo_yum.png' },
     { name: 'Rage Tail', src: 'marcas/rage-tail-logo.png' },
     { name: 'Rapala', src: 'marcas/Rapala-logo.png' },
     { name: 'X-Zone', src: 'marcas/x-zone-logo.png' },
@@ -188,13 +188,13 @@ export default function Home() {
           <div className="flex justify-center flex-wrap gap-8 md:gap-16 items-center">
             {/* Definimos los datos aquí mismo o arriba en tu componente */}
             {[
-              { name: 'Googan Squad', src: '/googan_logo.jpg', url: 'https://googansquad.com/' },
-              { name: 'Yum', src: '/logo_yum.png', url: 'https://www.lurenet.com/brands/yum' },
-              { name: 'Rage Tail', src: '/rage-tail-logo.png', url: 'https://www.strikeking.com/' },
-              { name: 'Rapala', src: '/Rapala-logo.png', url: 'https://www.rapala.com/' },
-              { name: 'X-Zone', src: '/x-zone-logo.png', url: 'https://www.xzonelures.com/' },
-              { name: 'Z-Man', src: '/zman-logo.png', url: 'https://zmanfishing.com/' },
-              { name: 'Zoom', src: '/zoom_logo.jpg', url: 'https://zoombaits.com/' },
+              { name: 'Googan Squad', src: 'marcas/googan_logo.jpg', url: 'https://googansquad.com/' },
+              { name: 'Yum', src: 'marcas/logo_yum.png', url: 'https://www.lurenet.com/brands/yum' },
+              { name: 'Rage Tail', src: 'marcas/rage-tail-logo.png', url: 'https://www.strikeking.com/' },
+              { name: 'Rapala', src: 'marcas/Rapala-logo.png', url: 'https://www.rapala.com/' },
+              { name: 'X-Zone', src: 'marcas/x-zone-logo.png', url: 'https://www.xzonelures.com/' },
+              { name: 'Z-Man', src: 'marcas/zman-logo.png', url: 'https://zmanfishing.com/' },
+              { name: 'Zoom', src: 'marcas/zoom_logo.jpg', url: 'https://zoombaits.com/' },
             ].map((brand, index) => (
               <a
                 key={index}
