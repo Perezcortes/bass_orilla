@@ -7,13 +7,13 @@ import Link from 'next/link';
 import { Loader2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPass, setShowPass] = useState(false);
-  const [ready, setReady]       = useState(false);
-  
+  const [ready, setReady] = useState(false);
+
   const router = useRouter();
   const supabase = createClient();
 
@@ -50,7 +50,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-6 py-12 bg-[#FAFAF8] dark:bg-[#111110]"
-      style={{ fontFamily:"'DM Sans',sans-serif" }}
+      style={{ fontFamily: "'DM Sans',sans-serif" }}
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
@@ -166,21 +166,21 @@ export default function LoginPage() {
         <div className="mb-10">
           {/* Pill Verde para Login (indica Acceso) */}
           <div style={{
-            display:'inline-flex', alignItems:'center', gap:6,
-            background:'rgba(45,90,39,.08)', border:'1px solid rgba(45,90,39,.15)',
-            borderRadius:100, padding:'4px 12px', marginBottom:20
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(45,90,39,.08)', border: '1px solid rgba(45,90,39,.15)',
+            borderRadius: 100, padding: '4px 12px', marginBottom: 20
           }}>
-            <span style={{ width:5, height:5, borderRadius:'50%', background:'#2D5A27', display:'inline-block' }} />
-            <span style={{ fontSize:10, fontWeight:600, letterSpacing:'0.14em', textTransform:'uppercase', color:'#2D5A27' }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2D5A27', display: 'inline-block' }} />
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2D5A27' }}>
               Acceso a miembros
             </span>
           </div>
 
           <h1
             className="text-gray-900 dark:text-[#f0ece4]"
-            style={{ fontFamily:'DM Serif Display,serif', fontSize:'2.25rem', lineHeight:1.1, margin:'0 0 8px' }}
+            style={{ fontFamily: 'DM Serif Display,serif', fontSize: '2.25rem', lineHeight: 1.1, margin: '0 0 8px' }}
           >
-            Hola de<br /><em style={{ fontStyle:'italic', color:'#2D5A27' }}>nuevo.</em>
+            Hola de<br /><em style={{ fontStyle: 'italic', color: '#2D5A27' }}>nuevo.</em>
           </h1>
           <p className="text-sm text-gray-400">Introduce tus credenciales para continuar.</p>
         </div>
@@ -189,12 +189,12 @@ export default function LoginPage() {
         {error && (
           <div
             className="flex items-center gap-2.5 mb-6 px-4 py-3 rounded-xl text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30"
-            style={{ animation:'shakeX .35s ease' }}
+            style={{ animation: 'shakeX .35s ease' }}
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="shrink-0">
-              <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
-              <path d="M7.5 4.5v3.75" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-              <circle cx="7.5" cy="10.5" r=".75" fill="currentColor"/>
+              <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M7.5 4.5v3.75" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <circle cx="7.5" cy="10.5" r=".75" fill="currentColor" />
             </svg>
             {error}
           </div>
@@ -202,41 +202,41 @@ export default function LoginPage() {
 
         {/* Formulario */}
         <form onSubmit={handleLogin} className="space-y-5">
-          
+
           <div className="bo-field">
             <label className="bo-label" htmlFor="login-email">Correo electrónico</label>
-            <input 
-              id="login-email" 
-              type="email" 
-              required 
+            <input
+              id="login-email"
+              type="email"
+              required
               value={email}
-              onChange={e => setEmail(e.target.value)} 
-              className="bo-input" 
-              placeholder="tu@correo.com" 
+              onChange={e => setEmail(e.target.value)}
+              className="bo-input"
+              placeholder="tu@correo.com"
             />
           </div>
 
           <div className="bo-field">
             <div className="flex justify-between items-end mb-[7px]">
-               <label className="bo-label" style={{marginBottom:0}} htmlFor="login-password">Contraseña</label>
+              <label className="bo-label" style={{ marginBottom: 0 }} htmlFor="login-password">Contraseña</label>
             </div>
-            
+
             <div className="relative">
-              <input 
-                id="login-password" 
-                type={showPass ? 'text' : 'password'} 
-                required 
+              <input
+                id="login-password"
+                type={showPass ? 'text' : 'password'}
+                required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="bo-input with-icon" 
-                placeholder="••••••••" 
+                className="bo-input with-icon"
+                placeholder="••••••••"
               />
-              <button 
-                type="button" 
-                tabIndex={-1} 
+              <button
+                type="button"
+                tabIndex={-1}
                 onClick={() => setShowPass(!showPass)}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                style={{ background:'none', border:'none', cursor:'pointer', padding:0, display:'flex' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
               >
                 {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -247,7 +247,7 @@ export default function LoginPage() {
             <button type="submit" disabled={loading} className="bo-btn-yellow">
               {loading ? <Loader2 size={15} className="animate-spin" /> : (
                 <>
-                  Entrar ahora <ArrowRight size={15} style={{opacity:0.6}}/>
+                  Entrar ahora <ArrowRight size={15} style={{ opacity: 0.6 }} />
                 </>
               )}
             </button>
@@ -256,7 +256,7 @@ export default function LoginPage() {
 
         {/* Footer Links */}
         <div className="mt-8 text-center space-y-6">
-           {/* Divider */}
+          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200 dark:bg-white/[0.07]" />
             <span className="text-[11px] tracking-widest uppercase text-gray-400">Nuevo aquí</span>
@@ -268,9 +268,9 @@ export default function LoginPage() {
           </Link>
 
           <div>
-             <Link href="#" className="bo-link-sm">
-                ¿Olvidaste tu contraseña?
-             </Link>
+            <Link href="/recuperar" className="bo-link-sm">
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
         </div>
 
