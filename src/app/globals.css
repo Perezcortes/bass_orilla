@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ESTA LÍNEA ES LA MAGIA PARA TAILWIND V4 SIN CONFIG FILE */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bass-green: #2d5a27;
+  --color-action-yellow: #f9b824;
+  --color-splash-blue: #4fb2e1;
+  --color-carbon-black: #1a1a1a;
+  --color-bone-white: #f4f4f4;
+  
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background-color: #f4f4f4; /* Color claro por defecto */
+    color: rgb(17 24 39);
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Suaviza el cambio */
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Estilos específicos cuando la clase .dark está activa */
+  .dark body {
+    background-color: #1a1a1a; /* Color oscuro */
+    color: rgb(243 244 246);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Custom animations */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in { animation: fade-in 0.6s ease-out; }
+
+  .text-stroke-black {
+    -webkit-text-stroke: 2px black;
+    paint-order: stroke fill;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .hover-scale { transition: transform 0.3s; }
+  .hover-scale:hover { transform: scale(1.05); }
 }
+
+/* Scrollbar Styles - Adaptados a dark mode manual */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+
+::-webkit-scrollbar-track { background-color: rgb(243 244 246); }
+.dark ::-webkit-scrollbar-track { background-color: rgb(17 24 39); }
+
+::-webkit-scrollbar-thumb { background-color: rgb(209 213 219); border-radius: 9999px; }
+.dark ::-webkit-scrollbar-thumb { background-color: rgb(55 65 81); }
+
+::-webkit-scrollbar-thumb:hover { background-color: rgb(156 163 175); }
+.dark ::-webkit-scrollbar-thumb:hover { background-color: rgb(75 85 99); }
+
+/* Animations */
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin-slow 3s linear infinite; }
+
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in-up { animation: fade-in-up 0.6s ease-out; }
+
+/* Shimmer Effect */
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-size: 1000px 100%;
+}
+.dark .animate-shimmer {
+  background: linear-gradient(to right, #1a1a1a 0%, #2a2a2a 20%, #1a1a1a 40%, #1a1a1a 100%);
+  background-size: 1000px 100%;
+}
+
+@keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.animate-pulse-slow { animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
