@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { useAuth } from '@/context/AuthContext'; // Importamos el contexto real
+import { useAuth } from '@/context/AuthContext'; 
 import { 
   ShoppingCart, 
   Menu, 
