@@ -7,37 +7,41 @@ import Image from 'next/image';
 export default function Hero() {
   return (
     <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden">
-      
-      {/* 1. BACKGROUND IMAGE */}
+
+      {/* 1. BACKGROUND IMAGE CON CAMBIO RESPONSIVO */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/fondo.jpeg" // Asegúrate que este sea el nombre correcto de tu collage
-          alt="Pesca deportiva"
-          fill
-          priority
-          className="object-cover object-[80%_center] md:object-center"
-        />
-        
-        {/* Overlay más oscuro en móvil para que el texto resalte sí o sí */}
-        <div className="absolute inset-0 bg-black/50 md:bg-gradient-to-b md:from-black/70 md:via-black/40 md:to-transparent z-10" />
-        
-        {/* Vignette extra */}
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/80 z-10" />
+        {/* usar la etiqueta <picture> de HTML estándar */}
+        <picture>
+          {/* Para pantallas grandes (min-width: 768px), usa esta imagen.*/}
+          <source media="(min-width: 768px)" srcSet="/fondo-pri.jpeg" />
+
+          {/* Para móviles (imagen por defecto) */}
+          <Image
+            src="/fondo1.jpeg"
+            alt="Pesca deportiva"
+            fill
+            priority
+            // En móvil usamos tu ajuste, en desktop ya no es necesario porque la imagen es la correcta.
+            className="object-cover object-[center_30%] md:object-cover"
+          />
+        </picture>
+
+        {/* Los overlays siguen igual... */}
+        <div className="absolute inset-0 bg-black/20 md:bg-gradient-to-b md:from-black/40 md:via-black/10 md:to-transparent z-10" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/50 z-10" />
       </div>
 
       {/* 2. CONTENIDO */}
       <div className="relative z-20 container mx-auto px-4 text-center mt-10 md:mt-0">
         <div className="mx-auto mb-8 animate-fade-in-up">
           <div className="inline-flex flex-col items-center">
-            
-            {/* Título adaptable */}
-            <h1 
+
+            <h1
               className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl text-white tracking-tight drop-shadow-2xl mb-4 leading-none"
             >
               BassOrilla
             </h1>
-            
-            {/* Badge adaptable */}
+
             <div className="bg-[#1A1A1A] text-action-yellow font-display font-black text-sm sm:text-xl md:text-2xl px-4 py-1.5 md:px-6 md:py-2 -mt-3 md:-mt-6 transform -rotate-2 rounded-sm border border-white shadow-2xl backdrop-blur-md">
               RIFAS Y SORTEOS
             </div>
@@ -48,7 +52,6 @@ export default function Hero() {
           Participa por el equipo de tus sueños. Cañas, carretes y embarcaciones de las mejores marcas mundiales.
         </p>
 
-        {/* Botones: En móvil ocupan todo el ancho (w-full) para ser fáciles de tocar */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs sm:max-w-none mx-auto">
           <Link
             href="/sorteos"
@@ -70,7 +73,6 @@ export default function Hero() {
       {/* 3. WAVE SVG */}
       <div className="absolute bottom-[-1px] left-0 w-full overflow-hidden leading-none z-30">
         <svg
-          // w-[150%] en móvil "estira" la ola horizontalmente para que las curvas sean más suaves y no picos
           className="relative block w-[200%] sm:w-full h-12 md:h-24 fill-[#FAFAF8] dark:fill-[#111110]"
           preserveAspectRatio="none"
           viewBox="0 0 1200 120"
