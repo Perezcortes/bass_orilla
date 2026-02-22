@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Ticket, Calendar, Megaphone, ArrowRight } from 'lucide-react';
+import { Ticket, Calendar, Megaphone, ArrowRight, MessageCircle } from 'lucide-react';
 
 export interface RaffleCardProps {
   id: string;
@@ -9,12 +9,22 @@ export interface RaffleCardProps {
   date: string;
   image: string;
   type: 'anuncio' | 'sorteo';
-  slug: string; // Recibimos el slug
+  slug: string;
 }
 
 export default function RaffleCard({ title, subtitle, date, image, type, slug }: RaffleCardProps) {
+  // Configuración de WhatsApp y Enlaces
+  const WHATSAPP_NUMBER = "529531447499";
+  const DOMINIO = "https://bass-orilla.vercel.app"; 
+  const linkPublicacion = `${DOMINIO}/publicaciones/${slug}`;
+
+  // El mensaje se genera aquí adentro para que pueda usar el 'slug' y 'title' de cada publicación
+  const mensajeFormateado = encodeURIComponent(
+    `Hola, vi este ${type === 'sorteo' ? 'sorteo' : 'anuncio'} en su página web:\n\n${linkPublicacion}\n\nMe gustaría pedir más información.`
+  );
+
   return (
-    <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-800 flex flex-col">
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-800 flex flex-col h-full">
       <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-black">
         <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute top-4 left-4 flex gap-2">
@@ -39,13 +49,25 @@ export default function RaffleCard({ title, subtitle, date, image, type, slug }:
           </div>
         </div>
 
-        {/* Botón que lleva a la URL amigable */}
-        <Link 
-          href={`/publicaciones/${slug}`}
-          className="w-full bg-gray-100 dark:bg-white/5 hover:bg-action-yellow hover:text-[#1A1A1A] text-gray-900 dark:text-white text-center py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group/btn"
-        >
-          Ver Detalles <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-        </Link>
+        <div className="grid grid-cols-1 gap-2 mt-auto">
+          {/* Botón Detalles */}
+          <Link 
+            href={`/publicaciones/${slug}`}
+            className="w-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white text-center py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 group/btn"
+          >
+            Ver Detalles <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+          </Link>
+
+          {/* Botón Directo WhatsApp con el link incluido */}
+          <a 
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${mensajeFormateado}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-[#25D366]/10 hover:bg-[#25D366] text-[#25D366] hover:text-white text-center py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+          >
+            <MessageCircle size={18} /> Info WhatsApp
+          </a>
+        </div>
       </div>
     </div>
   );

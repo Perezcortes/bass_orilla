@@ -2,46 +2,62 @@ import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Metadata } from 'next'; // Importamos el tipo Metadata
 import { MessageCircle, Calendar, Ticket, Megaphone, ArrowLeft } from 'lucide-react';
 
+// 1. GENERADOR DE METADATOS (¡La magia para WhatsApp y Facebook!)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const supabase = await createClient();
+  const { data: pub } = await supabase.from('publications').select('*').eq('slug', resolvedParams.slug).single();
+
+  if (!pub) return { title: 'Publicación no encontrada' };
+
+  return {
+    title: `${pub.title} | BassOrilla`,
+    description: pub.description,
+    openGraph: {
+      title: pub.title,
+      description: pub.description,
+      images: [pub.image_url], // Aquí le pasamos la foto de Cloudinary a WhatsApp
+    },
+  };
+}
+
+// 2. COMPONENTE PRINCIPAL DE LA PÁGINA
 export default async function PublicationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  // Resolvemos la promesa de params (Requisito de Next.js 15)
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
   const supabase = await createClient();
 
-  // Buscamos la publicación usando el slug
-  const { data: pub } = await supabase
-    .from('publications')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  const { data: pub } = await supabase.from('publications').select('*').eq('slug', slug).single();
 
-  if (!pub) {
-    notFound(); // Si no existe, muestra la página 404 automática de Next
-  }
+  if (!pub) notFound();
 
   const isSorteo = pub.type === 'sorteo';
   const WHATSAPP_NUMBER = "529531447499";
+  
+  // URL de tu página web (Cámbiala cuando compres tu dominio oficial)
+  const DOMINIO = "https://bassorilla.com"; 
+  const linkPublicacion = `${DOMINIO}/publicaciones/${slug}`;
+
+  // Actualizamos el mensaje para que incluya el Link y WhatsApp genere la miniatura
   const wppText = encodeURIComponent(
     isSorteo 
-    ? `Hola, me interesa participar en el sorteo: "${pub.title}". ¿Me das más información?`
-    : `Hola, vi tu publicación de "${pub.title}" y tengo una duda.`
+    ? `Hola, me interesa participar en este sorteo:\n\n${linkPublicacion}\n\n¿Me das más información?`
+    : `Hola, vi esta publicación y tengo una duda:\n\n${linkPublicacion}`
   );
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] dark:bg-[#111110] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         
-        {/* Botón Volver */}
         <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-action-yellow transition-colors mb-8 font-bold text-sm">
           <ArrowLeft size={18} /> Volver al inicio
         </Link>
 
-        {/* Tarjeta Principal */}
         <div className="bg-white dark:bg-[#1A1A1A] rounded-3xl overflow-hidden shadow-xl border border-gray-100 dark:border-gray-800">
           
-          {/* Imagen Header */}
           <div className="relative h-64 md:h-96 w-full bg-black">
             <Image src={pub.image_url} alt={pub.title} fill className="object-cover opacity-90" priority />
             <div className="absolute top-6 left-6 flex gap-2">
@@ -57,7 +73,6 @@ export default async function PublicationDetailPage({ params }: { params: Promis
             </div>
           </div>
 
-          {/* Contenido */}
           <div className="p-8 md:p-12">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-400 mb-4">
               <Calendar size={16} /> Publicado el {new Date(pub.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -71,7 +86,6 @@ export default async function PublicationDetailPage({ params }: { params: Promis
               {pub.description}
             </div>
 
-            {/* CTA a WhatsApp */}
             <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-100 dark:border-gray-800">
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
