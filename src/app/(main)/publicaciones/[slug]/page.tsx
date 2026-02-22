@@ -38,7 +38,7 @@ export default async function PublicationDetailPage({ params }: { params: Promis
   const isSorteo = pub.type === 'sorteo';
   const WHATSAPP_NUMBER = "529531447499";
   
-  const DOMINIO = "https://bassorilla.com"; 
+  const DOMINIO = "https://bass-orilla.vercel.app/"; 
   const linkPublicacion = `${DOMINIO}/publicaciones/${slug}`;
 
   const wppText = encodeURIComponent(
