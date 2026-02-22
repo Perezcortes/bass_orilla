@@ -232,7 +232,7 @@ export default function Home() {
             className="object-cover"
           />
           
-          {/* Capa 1: Un tinte verde oscuro para mantener la marca */}
+          {/* Capa 1: Un tinte green oscuro para mantener la marca */}
           <div className="absolute inset-0 bg-bass-green/80 mix-blend-multiply" />
           
           {/* Capa 2: Un degradado negro para oscurecer más y resaltar el texto blanco */}

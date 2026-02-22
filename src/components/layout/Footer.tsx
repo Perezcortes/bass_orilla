@@ -19,8 +19,8 @@ export default function Footer() {
       title: 'Soporte',
       links: [
         { label: 'Preguntas Frecuentes', href: '/faq' },
-        { label: 'Términos y Condiciones', href: '/terminos' },
-        { label: 'Política de Privacidad', href: '/privacidad' },
+        { label: 'Términos y Condiciones', href: '/terminos-y-condiciones' },
+        { label: 'Aviso de Privacidad', href: '/aviso-de-privacidad' },
         { label: 'Contacto', href: '/contacto' },
       ],
     },
