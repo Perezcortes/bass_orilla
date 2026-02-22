@@ -365,18 +365,6 @@ export default function PublicidadModule() {
                             <div className="p-6">
                                 <h2 className="text-2xl font-display font-black text-gray-900 dark:text-white mb-3">{selectedPub.title}</h2>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">{selectedPub.description}</p>
-
-                                {selectedPub.type === 'sorteo' && (
-                                    <a
-                                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa participar en el sorteo: ${selectedPub.title}`)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE57] text-white px-5 py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-green-500/20"
-                                    >
-                                        <MessageCircle size={20} />
-                                        Comprar Boleto (WhatsApp)
-                                    </a>
-                                )}
                             </div>
                         </div>
 

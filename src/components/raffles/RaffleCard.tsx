@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Ticket, Calendar, Megaphone, ArrowRight, MessageCircle } from 'lucide-react';
+import ShareButton from '@/components/ui/ShareButton'; // <-- Importamos nuestro nuevo botón
 
 export interface RaffleCardProps {
   id: string;
@@ -13,20 +14,18 @@ export interface RaffleCardProps {
 }
 
 export default function RaffleCard({ title, subtitle, date, image, type, slug }: RaffleCardProps) {
-  // Configuración de WhatsApp y Enlaces
   const WHATSAPP_NUMBER = "529531447499";
-  const DOMINIO = "https://bass-orilla.vercel.app"; 
+  const DOMINIO = "https://bassorilla.com"; // Recuerda cambiarlo cuando tengas tu dominio final
   const linkPublicacion = `${DOMINIO}/publicaciones/${slug}`;
 
-  // El mensaje se genera aquí adentro para que pueda usar el 'slug' y 'title' de cada publicación
   const mensajeFormateado = encodeURIComponent(
-    `Hola, vi este ${type === 'sorteo' ? 'sorteo' : 'anuncio'} en su página web:\n\n${linkPublicacion}\n\nMe gustaría pedir más información.`
+    `Hola, vi este sorteo en su página web:\n\n${linkPublicacion}\n\nMe gustaría pedir más información.`
   );
 
   return (
     <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-800 flex flex-col h-full">
       <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-black">
-        <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+        <Image src={image} alt={title} fill className="object-contain group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute top-4 left-4 flex gap-2">
           {type === 'sorteo' ? (
             <div className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
@@ -49,8 +48,8 @@ export default function RaffleCard({ title, subtitle, date, image, type, slug }:
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-2 mt-auto">
-          {/* Botón Detalles */}
+        {/* --- NUEVA ÁREA DE BOTONES --- */}
+        <div className="flex flex-col gap-2 mt-auto">
           <Link 
             href={`/publicaciones/${slug}`}
             className="w-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white text-center py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 group/btn"
@@ -58,15 +57,29 @@ export default function RaffleCard({ title, subtitle, date, image, type, slug }:
             Ver Detalles <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
           </Link>
 
-          {/* Botón Directo WhatsApp con el link incluido */}
-          <a 
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${mensajeFormateado}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#25D366]/10 hover:bg-[#25D366] text-[#25D366] hover:text-white text-center py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
-          >
-            <MessageCircle size={18} /> Info WhatsApp
-          </a>
+          <div className="flex gap-2">
+            {type === 'sorteo' ? (
+              <>
+                <a 
+                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${mensajeFormateado}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-[#25D366]/10 hover:bg-[#25D366] text-[#25D366] hover:text-white text-center py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle size={18} /> WhatsApp
+                </a>
+                <ShareButton 
+                  title={title} text={subtitle} url={linkPublicacion} showText={false}
+                  className="w-12 bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white rounded-xl" 
+                />
+              </>
+            ) : (
+              <ShareButton 
+                title={title} text={subtitle} url={linkPublicacion} 
+                className="w-full bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white py-3 rounded-xl" 
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
