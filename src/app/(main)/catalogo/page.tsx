@@ -1,273 +1,307 @@
 import ProductCard from '@/components/products/ProductCard';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, PackageX, ChevronRight } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server';
+import Link from 'next/link';
 
-export default function CatalogoPage() {
-  // Mock data para productos
-  const products = [
-    {
-      id: '1',
-      name: 'Yamamoto Senko 5"',
-      brand: 'Yamamoto',
-      description: 'The standard for soft plastics. Irresistible fall.',
-      price: 8.49,
-      image:
-        'https://images.unsplash.com/photo-1590872241989-c5d9c221c2e9?q=80&w=2070',
-      colors: ['#2f5e38', '#a05e2b', '#d9f99d', '#f3f4f6'],
-      badge: 'best-seller' as const,
-      rating: 4.8,
-      inStock: true,
-    },
-    {
-      id: '2',
-      name: 'Strike King Squarebill 1.5',
-      brand: 'Strike King',
-      description: 'Deflects off cover to trigger aggressive strikes.',
-      price: 5.99,
-      originalPrice: 7.99,
-      image:
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070',
-      colors: ['#fbbf24', '#9ca3af'],
-      badge: 'sale' as const,
-      rating: 4.5,
-      inStock: true,
-    },
-    {
-      id: '3',
-      name: 'Jackall Gantarel Jr.',
-      brand: 'Jackall',
-      description: 'Premium bluegill imitator with realistic S-swimming action.',
-      price: 34.99,
-      image:
-        'https://images.unsplash.com/photo-1544552866-d3ed42536cfd?q=80&w=2074',
-      colors: ['#86efac', '#fb923c'],
-      badge: 'raffle' as const,
-      rating: 5.0,
-      inStock: true,
-    },
-    {
-      id: '4',
-      name: 'War Eagle Spinnerbait',
-      brand: 'War Eagle',
-      description: 'Double willow leaf blades for maximum flash.',
-      price: 8.99,
-      image:
-        'https://images.unsplash.com/photo-1564701148948-15adf2c41d2c?q=80&w=2070',
-      colors: ['#ffffff', '#fde047'],
-      rating: 4.3,
-      inStock: true,
-    },
-    {
-      id: '5',
-      name: 'LiveTarget Hollow Body Frog',
-      brand: 'LiveTarget',
-      description: 'Walk-the-dog action over heavy lily pads.',
-      price: 13.49,
-      image:
-        'https://images.unsplash.com/photo-1590872241989-c5d9c221c2e9?q=80&w=2070',
-      colors: ['#16a34a', '#854d0e', '#000000'],
-      badge: 'new' as const,
-      rating: 4.6,
-      inStock: true,
-    },
-    {
-      id: '6',
-      name: 'Strike King Tour Grade Jig',
-      brand: 'Strike King',
-      description: 'Heavy cover flipping jig. Stand-up head design.',
-      price: 4.99,
-      image:
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070',
-      colors: ['#1e3a8a', '#166534'],
-      rating: 4.7,
-      inStock: true,
-    },
-  ];
+// === TAXONOMÍA MAESTRA ===
+const CATALOG_STRUCTURE: Record<string, Record<string, string[]>> = {
+  "Agua Dulce": {
+    "Carretes": ["Spinning", "Casting", "Spincast"],
+    "Cañas": ["Spinning", "Casting"],
+    "Combos": ["Combos Spinning", "Combos Casting", "Combos Spincast"],
+    "Señuelos": ["Plásticos", "Curricanes", "Swimbaits", "Spinnerbaits y Buzzbaits", "Jigs y Chatterbaits", "Cucharillas"],
+    "Terminal Tackle": ["Anzuelos y Tercias", "Plomos y Tungstenos", "Jigheads", "Esencias", "Accesorios Varios"]
+  },
+  "Ropa y Accesorios": {
+    "Ropa": ["Buff", "Camisas y jerseys", "Gorras y Sombreros", "Guantes", "Chalecos Salvavidas", "Pantalones y Shorts"],
+    "Accesorios Varios": ["Básculas", "Herramientas", "Red de Pesca", "Cuchillos y Navajas", "Otros Accesorios"],
+    "Almacenaje": ["Almacenaje para Señuelos", "Almacenaje para Cañas", "Almacenaje para Carretes"],
+    "Lentes Polarizados": ["General"]
+  },
+  "Líneas para Pescar": {
+    "Monofilamento": ["General"],
+    "Fluorocarbono": ["General"],
+    "Trenzado": ["General"],
+    "Líderes": ["General"]
+  }
+};
 
-  const categories = [
-    { name: 'Soft Plastics', count: 24 },
-    { name: 'Hard Baits', count: 18 },
-    { name: 'Jigs & Spoons', count: 12 },
-    { name: 'Topwater', count: 15 },
-  ];
+export default async function CatalogoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+  const resolvedParams = await searchParams;
+  const supabase = await createClient();
 
-  const brands = [
-    { name: 'BassOrilla Gear', count: 8 },
-    { name: 'Yamamoto', count: 12 },
-    { name: 'Strike King', count: 16 },
-    { name: 'Rapala', count: 10 },
-  ];
+  // 1. OBTENER PARÁMETROS DE LA URL
+  const currentPage = Number(resolvedParams.page) || 1;
+  const pageSize = 15; // Límite de 15 productos por página
+  const currentDept = resolvedParams.dept;
+  const currentCat = resolvedParams.cat;
+  const currentSubcat = resolvedParams.subcat;
+  const currentSearch = resolvedParams.q;
+  const currentSort = resolvedParams.sort || 'recent';
+
+  // 2. CONSTRUIR LA CONSULTA A SUPABASE DINÁMICAMENTE
+  let query = supabase
+    .from('products')
+    .select('*', { count: 'exact' }) // count exacto para la paginación
+    .eq('is_active', true);
+
+  // Filtros de jerarquía
+  if (currentDept) query = query.eq('department', currentDept);
+  if (currentCat) query = query.eq('category', currentCat);
+  if (currentSubcat) query = query.eq('subcategory', currentSubcat);
+  
+  // Búsqueda por texto (Busca en título o marca)
+  if (currentSearch) {
+    query = query.or(`title.ilike.%${currentSearch}%,brand.ilike.%${currentSearch}%`);
+  }
+
+  // Ordenamiento
+  if (currentSort === 'price_asc') query = query.order('price', { ascending: true });
+  else if (currentSort === 'price_desc') query = query.order('price', { ascending: false });
+  else if (currentSort === 'ofertas') query = query.not('discount_price', 'is', null).order('created_at', { ascending: false });
+  else query = query.order('created_at', { ascending: false }); // 'recent' por defecto
+
+  // Paginación
+  const from = (currentPage - 1) * pageSize;
+  const to = from + pageSize - 1;
+  query = query.range(from, to);
+
+  // 3. EJECUTAR CONSULTA
+  const { data: products, count } = await query;
+  const safeProducts = products || [];
+  const totalItems = count || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  // Función auxiliar para generar URLs manteniendo los otros parámetros
+  const buildUrl = (updates: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    if (currentDept) params.set('dept', currentDept);
+    if (currentCat) params.set('cat', currentCat);
+    if (currentSubcat) params.set('subcat', currentSubcat);
+    if (currentSearch) params.set('q', currentSearch);
+    if (currentSort && currentSort !== 'recent') params.set('sort', currentSort);
+    
+    // Aplicamos actualizaciones
+    Object.keys(updates).forEach(key => {
+      if (updates[key] === undefined) params.delete(key);
+      else params.set(key, updates[key] as string);
+    });
+    
+    return `/catalogo?${params.toString()}`;
+  };
 
   return (
-    <div className="min-h-screen bg-[#F4F4F4] dark:bg-[#1A1A1A] transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <a href="/" className="hover:text-action-yellow">
-            Inicio
-          </a>
-          <span className="mx-2">/</span>
-          <span className="text-gray-800 dark:text-gray-200 font-medium">
-            Catálogo
-          </span>
+    <div className="min-h-screen bg-[#FAFAF8] dark:bg-[#111110] transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        {/* Breadcrumb Automático */}
+        <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium overflow-x-auto whitespace-nowrap pb-2">
+          <Link href="/" className="hover:text-action-yellow transition-colors">Inicio</Link>
+          <ChevronRight size={14} className="mx-2 shrink-0" />
+          <Link href="/catalogo" className={`hover:text-action-yellow transition-colors ${!currentDept ? 'text-gray-900 dark:text-white font-bold' : ''}`}>Catálogo</Link>
+          
+          {currentDept && (
+            <>
+              <ChevronRight size={14} className="mx-2 shrink-0" />
+              <Link href={buildUrl({ dept: currentDept, cat: undefined, subcat: undefined, page: '1' })} className={`hover:text-action-yellow transition-colors ${!currentCat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
+                {currentDept}
+              </Link>
+            </>
+          )}
+          {currentCat && (
+            <>
+              <ChevronRight size={14} className="mx-2 shrink-0" />
+              <Link href={buildUrl({ cat: currentCat, subcat: undefined, page: '1' })} className={`hover:text-action-yellow transition-colors ${!currentSubcat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
+                {currentCat}
+              </Link>
+            </>
+          )}
+          {currentSubcat && (
+            <>
+              <ChevronRight size={14} className="mx-2 shrink-0" />
+              <span className="text-gray-900 dark:text-white font-bold">{currentSubcat}</span>
+            </>
+          )}
         </nav>
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-gray-200 dark:border-gray-800 pb-6">
           <div>
-            <h2 className="text-3xl font-display font-black text-gray-900 dark:text-white uppercase tracking-tight">
-              Señuelos Pro
+            <h2 className="text-3xl md:text-5xl font-display font-black text-gray-900 dark:text-white tracking-tight uppercase">
+              {currentSubcat || currentCat || currentDept || 'EQUIPO PRO'}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {products.length} productos encontrados
+            <p className="text-gray-600 dark:text-gray-400 mt-2 font-medium">
+              Mostrando {safeProducts.length} de {totalItems} productos
             </p>
           </div>
 
-          {/* Sort & Search */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {/* Solo maquetamos la barra de búsqueda y el orden, le agregaremos su lógica cliente en el próximo paso si quieres */}
             <div className="relative flex-1 sm:flex-initial">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-action-yellow focus:border-action-yellow transition-colors"
-              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <input defaultValue={currentSearch || ''} type="text" placeholder="Buscar..." className="w-full sm:w-64 pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1A1A1A] text-sm text-gray-900 dark:text-white focus:outline-none focus:border-action-yellow transition-colors shadow-sm" />
             </div>
-            <select className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm rounded-lg focus:ring-action-yellow focus:border-action-yellow py-2 pl-3 pr-10 transition-colors">
-              <option>Destacados</option>
-              <option>Precio: Menor a Mayor</option>
-              <option>Precio: Mayor a Menor</option>
-              <option>Más Recientes</option>
-            </select>
           </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Filters */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 sticky top-24">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-display font-bold text-lg flex items-center gap-2">
-                  <SlidersHorizontal size={20} />
-                  Filtros
+          
+          {/* SIDEBAR - TAXONOMÍA JERÁRQUICA */}
+          <aside className="w-full lg:w-72 flex-shrink-0">
+            <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-800">
+                <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                  <SlidersHorizontal size={20} className="text-action-yellow" /> Explorar
                 </h3>
-                <button className="text-action-yellow text-sm font-medium hover:underline">
-                  Limpiar
-                </button>
+                {(currentDept || currentSearch) && (
+                  <Link href="/catalogo" className="text-xs font-bold text-gray-500 hover:text-action-yellow transition-colors">
+                    Limpiar Filtros
+                  </Link>
+                )}
               </div>
 
-              {/* Categories */}
-              <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-6">
-                <h3 className="font-display font-bold text-gray-900 dark:text-white uppercase text-sm tracking-wide mb-3">
-                  Categoría
-                </h3>
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <label key={category.name} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox text-action-yellow rounded border-gray-300 dark:border-gray-600 focus:ring-action-yellow bg-transparent"
-                      />
-                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-300 flex-1">
-                        {category.name}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        ({category.count})
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+              {/* Acordeón de Categorías */}
+              <div className="space-y-6">
+                {Object.keys(CATALOG_STRUCTURE).map((dept) => {
+                  const isDeptActive = currentDept === dept;
+                  
+                  return (
+                    <div key={dept} className="border-b border-gray-50 dark:border-gray-800/50 pb-4 last:border-0 last:pb-0">
+                      {/* Enlace de Departamento */}
+                      <Link 
+                        href={buildUrl({ dept, cat: undefined, subcat: undefined, page: '1' })}
+                        className={`block font-bold uppercase tracking-wider text-sm mb-3 transition-colors ${isDeptActive ? 'text-action-yellow' : 'text-gray-900 dark:text-white hover:text-action-yellow'}`}
+                      >
+                        {dept}
+                      </Link>
 
-              {/* Brands */}
-              <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-6">
-                <h3 className="font-display font-bold text-gray-900 dark:text-white uppercase text-sm tracking-wide mb-3">
-                  Marca
-                </h3>
-                <div className="space-y-2">
-                  {brands.map((brand) => (
-                    <label key={brand.name} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox text-action-yellow rounded border-gray-300 dark:border-gray-600 focus:ring-action-yellow bg-transparent"
-                      />
-                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-300 flex-1">
-                        {brand.name}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        ({brand.count})
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                      {/* Solo mostramos categorías si el departamento está activo o si no hay ninguno seleccionado */}
+                      {(isDeptActive || !currentDept) && (
+                        <div className="space-y-4 pl-3 border-l-2 border-gray-100 dark:border-gray-800">
+                          {Object.keys(CATALOG_STRUCTURE[dept]).map((cat) => {
+                            const isCatActive = currentCat === cat;
 
-              {/* Price Range */}
-              <div className="mb-6">
-                <h3 className="font-display font-bold text-gray-900 dark:text-white uppercase text-sm tracking-wide mb-3">
-                  Precio
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      className="w-full accent-action-yellow"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    />
-                  </div>
-                </div>
+                            return (
+                              <div key={cat}>
+                                <Link 
+                                  href={buildUrl({ dept, cat, subcat: undefined, page: '1' })}
+                                  className={`block text-sm font-medium transition-colors ${isCatActive ? 'text-action-yellow' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                                >
+                                  {cat}
+                                </Link>
+
+                                {/* Solo mostramos subcategorías si la categoría está activa */}
+                                {isCatActive && (
+                                  <div className="mt-2 space-y-2 pl-3">
+                                    {CATALOG_STRUCTURE[dept][cat].map((subcat) => {
+                                      const isSubActive = currentSubcat === subcat;
+                                      return (
+                                        <Link 
+                                          key={subcat}
+                                          href={buildUrl({ dept, cat, subcat, page: '1' })}
+                                          className={`block text-xs transition-colors ${isSubActive ? 'text-action-yellow font-bold' : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                                        >
+                                          • {subcat}
+                                        </Link>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </aside>
 
-          {/* Products Grid */}
-          <main className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
+          {/* CUADRÍCULA DE PRODUCTOS */}
+          <main className="flex-1 flex flex-col">
+            {safeProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {safeProducts.map((product) => (
+                    <ProductCard key={product.id} {...product} />
+                  ))}
+                </div>
 
-            {/* Pagination */}
-            <div className="mt-12 flex justify-center">
-              <nav className="flex items-center space-x-2">
-                <button className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  ←
-                </button>
-                <button className="px-4 py-2 rounded-lg bg-action-yellow text-carbon-black font-bold">
-                  1
-                </button>
-                <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
-                  2
-                </button>
-                <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
-                  3
-                </button>
-                <span className="text-gray-400">...</span>
-                <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
-                  8
-                </button>
-                <button className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  →
-                </button>
-              </nav>
-            </div>
+                {/* --- PAGINACIÓN --- */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center border-t border-gray-200 dark:border-gray-800 pt-8">
+                    <nav className="flex items-center gap-2">
+                      {/* Botón Anterior */}
+                      {currentPage > 1 ? (
+                        <Link href={buildUrl({ page: (currentPage - 1).toString() })} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors font-medium text-sm">
+                          Anterior
+                        </Link>
+                      ) : (
+                        <span className="px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed font-medium text-sm">
+                          Anterior
+                        </span>
+                      )}
+
+                      {/* Números de página */}
+                      <div className="hidden sm:flex items-center gap-2">
+                        {[...Array(totalPages)].map((_, i) => {
+                          const pageNum = i + 1;
+                          const isCurrent = pageNum === currentPage;
+                          return (
+                            <Link 
+                              key={pageNum}
+                              href={buildUrl({ page: pageNum.toString() })}
+                              className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent ? 'bg-action-yellow text-[#1A1A1A] shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-[#1A1A1A]'}`}
+                            >
+                              {pageNum}
+                            </Link>
+                          );
+                        })}
+                      </div>
+
+                      {/* Contador Móvil */}
+                      <span className="sm:hidden text-sm font-medium text-gray-500">
+                        Pág {currentPage} de {totalPages}
+                      </span>
+
+                      {/* Botón Siguiente */}
+                      {currentPage < totalPages ? (
+                        <Link href={buildUrl({ page: (currentPage + 1).toString() })} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors font-medium text-sm">
+                          Siguiente
+                        </Link>
+                      ) : (
+                        <span className="px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed font-medium text-sm">
+                          Siguiente
+                        </span>
+                      )}
+                    </nav>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="bg-white dark:bg-[#1A1A1A] rounded-3xl border border-gray-100 dark:border-gray-800 p-16 text-center flex flex-col items-center justify-center shadow-sm h-full">
+                <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-6">
+                  <PackageX className="text-gray-400 dark:text-gray-500" size={40} />
+                </div>
+                <h3 className="text-2xl font-display font-black text-gray-900 dark:text-white mb-3">
+                  No hay resultados
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+                  No encontramos productos que coincidan con estos filtros. Intenta buscar en otra categoría.
+                </p>
+                <Link href="/catalogo" className="bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-bold hover:bg-action-yellow dark:hover:bg-action-yellow hover:text-black transition-colors">
+                  Ver todo el catálogo
+                </Link>
+              </div>
+            )}
           </main>
+
         </div>
       </div>
     </div>

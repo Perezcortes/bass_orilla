@@ -31,7 +31,7 @@ export default async function PublicationDetailPage({ params }: { params: Promis
   const slug = resolvedParams.slug;
   const supabase = await createClient();
 
-  const { data: pub } = await supabase.from('publications').select('*').eq('slug', slug).single();
+  const { data: pub } = await supabase.from('publications').select('*').eq('is_active', true).eq('slug', slug).single();
 
   if (!pub) notFound();
 

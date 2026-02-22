@@ -10,6 +10,7 @@ export default async function PublicacionesPage() {
   const { data: publications } = await supabase
     .from('publications')
     .select('*')
+    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   const hasPubs = publications && publications.length > 0;

@@ -6,10 +6,11 @@ import { createClient } from '@/utils/supabase/server';
 export default async function ActiveRaffles() {
   const supabase = await createClient();
 
-  // Trae TODOS (anuncios y sorteos), ordena por tipo (Anuncios primero), luego por fecha
+  // Trae TODOS (anuncios y sorteos) QUE ESTÉN ACTIVOS, ordena por tipo (Anuncios primero), luego por fecha
   const { data: publications } = await supabase
     .from('publications')
     .select('*')
+    .eq('is_active', true) // <--- ESTE ES EL FILTRO CLAVE
     .order('type', { ascending: true }) 
     .order('created_at', { ascending: false })
     .limit(6);
