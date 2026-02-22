@@ -1,138 +1,50 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Ticket, Calendar, TrendingUp } from 'lucide-react';
+import { Ticket, Calendar, Megaphone, ArrowRight } from 'lucide-react';
 
-interface RaffleCardProps {
+export interface RaffleCardProps {
   id: string;
   title: string;
   subtitle: string;
-  price: number;
   date: string;
   image: string;
-  soldPercentage: number;
-  totalTickets: number;
-  soldTickets: number;
-  badge?: 'hot' | 'new' | 'ending';
+  type: 'anuncio' | 'sorteo';
+  slug: string; // Recibimos el slug
 }
 
-export default function RaffleCard({
-  id,
-  title,
-  subtitle,
-  price,
-  date,
-  image,
-  soldPercentage,
-  totalTickets,
-  soldTickets,
-  badge,
-}: RaffleCardProps) {
-  const getBadgeConfig = () => {
-    switch (badge) {
-      case 'hot':
-        return {
-          text: '¡Últimos boletos!',
-          className: 'bg-red-600 animate-pulse',
-        };
-      case 'new':
-        return {
-          text: 'Nuevo',
-          className: 'bg-bass-green',
-        };
-      case 'ending':
-        return {
-          text: 'Por terminar',
-          className: 'bg-orange-500',
-        };
-      default:
-        return null;
-    }
-  };
-
-  const badgeConfig = getBadgeConfig();
-
-  const getProgressColor = () => {
-    if (soldPercentage >= 80) return 'bg-action-yellow';
-    if (soldPercentage >= 50) return 'bg-bass-green';
-    return 'bg-splash-blue';
-  };
-
+export default function RaffleCard({ title, subtitle, date, image, type, slug }: RaffleCardProps) {
   return (
-    <div className="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-action-yellow/10 border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:-translate-y-2">
-      {/* Image Section */}
-      <div className="relative h-64 overflow-hidden">
-        {badgeConfig && (
-          <div
-            className={`absolute top-4 right-4 z-10 ${badgeConfig.className} text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide`}
-          >
-            {badgeConfig.text}
-          </div>
-        )}
-        
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-        
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
-        
-        <div className="absolute bottom-4 left-4">
-          <h3 className="text-white font-display font-bold text-2xl mb-1">
-            {title}
-          </h3>
-          <p className="text-gray-200 text-sm">{subtitle}</p>
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-800 flex flex-col">
+      <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-black">
+        <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute top-4 left-4 flex gap-2">
+          {type === 'sorteo' ? (
+            <div className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+              <Ticket size={12} className="text-action-yellow" /> Sorteo
+            </div>
+          ) : (
+            <div className="bg-purple-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+              <Megaphone size={12} /> Anuncio
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Info Section */}
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400 block">
-              Precio del boleto
-            </span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              ${price.toFixed(2)} MXN
-            </span>
-          </div>
-          <div className="text-right">
-            <span className="text-xs text-gray-500 dark:text-gray-400 block">
-              Fecha del sorteo
-            </span>
-            <div className="flex items-center gap-1 text-sm font-semibold text-splash-blue">
-              <Calendar size={14} />
-              {date}
-            </div>
+      <div className="p-6 flex-1 flex flex-col">
+        <div className="flex-1">
+          <h3 className="text-xl font-display font-black text-gray-900 dark:text-white mb-1 line-clamp-1">{title}</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">{subtitle}</p>
+          <div className="flex items-center gap-2 text-xs font-medium text-gray-400 bg-gray-50 dark:bg-white/5 w-fit px-3 py-1.5 rounded-lg mb-6">
+            <Calendar size={14} /> {date}
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-2 flex justify-between text-xs font-medium">
-          <span className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
-            <TrendingUp size={14} />
-            {soldPercentage}% Vendido
-          </span>
-          <span className="text-action-yellow">
-            {soldTickets}/{totalTickets}
-          </span>
-        </div>
-        
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-6">
-          <div
-            className={`${getProgressColor()} h-2.5 rounded-full transition-all duration-300`}
-            style={{ width: `${soldPercentage}%` }}
-          ></div>
-        </div>
-
-        {/* CTA Button */}
-        <Link
-          href={`/sorteos/${id}`}
-          className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 px-4 rounded-xl hover:bg-action-yellow hover:text-carbon-black dark:hover:bg-action-yellow transition-all flex items-center justify-center gap-2 group"
+        {/* Botón que lleva a la URL amigable */}
+        <Link 
+          href={`/publicaciones/${slug}`}
+          className="w-full bg-gray-100 dark:bg-white/5 hover:bg-action-yellow hover:text-[#1A1A1A] text-gray-900 dark:text-white text-center py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group/btn"
         >
-          <Ticket className="group-hover:rotate-12 transition-transform" size={20} />
-          Comprar Boleto
+          Ver Detalles <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
         </Link>
       </div>
     </div>

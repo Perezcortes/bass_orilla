@@ -9,7 +9,13 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Si vas a usar imágenes de otros sitios, agrégalos aquí también
+      
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**', // Permite cualquier carpeta dentro de Cloudinary
+      },
     ],
   },
 };

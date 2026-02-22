@@ -43,9 +43,9 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: 'Inicio' },
-    { href: '/sorteos', label: 'Sorteos' },
+    { href: '/publicaciones', label: 'Sorteos' },
     { href: '/catalogo', label: 'Catálogo' },
-    { href: '/marcas', label: 'Marcas' },
+    { href: '#marcas', label: 'Marcas' },
     { href: '/contacto', label: 'Contacto' },
   ];
 
