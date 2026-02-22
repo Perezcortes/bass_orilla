@@ -15,7 +15,7 @@ export interface RaffleCardProps {
 
 export default function RaffleCard({ title, subtitle, date, image, type, slug }: RaffleCardProps) {
   const WHATSAPP_NUMBER = "529531447499";
-  const DOMINIO = "https://bassorilla.com"; // Recuerda cambiarlo cuando tengas tu dominio final
+  const DOMINIO = "https://bass-orilla.vercel.app/"; // Recuerda cambiarlo cuando tengas tu dominio final
   const linkPublicacion = `${DOMINIO}/publicaciones/${slug}`;
 
   const mensajeFormateado = encodeURIComponent(
