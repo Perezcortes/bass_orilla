@@ -3,6 +3,8 @@ import { Inter, Montserrat } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext'; // <-- 1. Importamos el Provider
+import CartDrawer from '@/components/cart/CartDrawer'; // <-- 2. Importamos el Drawer (Panel lateral)
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,8 +34,16 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased bg-bone-white dark:bg-carbon-black text-carbon-black dark:text-bone-white transition-colors duration-300`}>
         <ThemeProvider>
           <AuthProvider>
-             {/* AQUÍ YA NO HAY NAVBAR NI FOOTER, SOLO LOS HIJOS */}
-            {children}
+            {/* 3. Envolvemos la app con el CartProvider */}
+            <CartProvider>
+              
+              {/* AQUÍ YA NO HAY NAVBAR NI FOOTER, SOLO LOS HIJOS */}
+              {children}
+              
+              {/* 4. Colocamos el Drawer aquí para que viva en todas partes y salga por encima de todo */}
+              <CartDrawer />
+              
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

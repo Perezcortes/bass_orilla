@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import ZoomableImage from '@/components/ui/ZoomableImage';
 import ShareButton from '@/components/ui/ShareButton';
+import { useCart } from '@/context/CartContext'; // <-- Importación agregada
 
 type Variant = { colorName: string; imageUrl: string; inStock: boolean; };
 type Product = {
@@ -22,11 +23,13 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
     const [selectedVariant, setSelectedVariant] = useState<Variant>(product.variants[0]);
+    
+    // Obtenemos la función para agregar al carrito
+    const { addToCart } = useCart(); 
 
     // === LÓGICA DE SPECS INTELIGENTES ===
     const specsText = product.specs || "";
 
-    // Función extractora genérica: Busca palabras clave y devuelve opciones separadas por coma
     const parseVariantOptions = (text: string, keys: string[]) => {
         const line = text.split('\n').find(l => {
             if (!l.includes(':')) return false;
@@ -36,7 +39,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         if (!line) return { label: '', options: [] };
 
         const parts = line.split(':');
-        const label = parts[0].trim(); // Conserva la capitalización original (Ej: "Tallas", "Medidas")
+        const label = parts[0].trim(); 
         const options = parts.slice(1).join(':').split(',').map(s => s.trim());
         return { label, options };
     };
@@ -49,26 +52,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     const sizeData = parseVariantOptions(specsText, ['talla', 'tallas', 'medida', 'medidas', 'tamaño', 'tamaños', 'peso', 'pesos']);
     const [selectedSize, setSelectedSize] = useState<string>(sizeData.options[0] || '');
 
-
-    // === WHATSAPP Y PRECIOS ===
-    const WHATSAPP_NUMBER = "529531447499";
-    const DOMINIO = "https://bass-orilla.vercel.app";
-    const linkPublicacion = `${DOMINIO}/catalogo/${product.slug}`;
-
-    let wppTextMsg = `Hola, me interesa comprar este producto:\n\n*${product.title}*\n`;
-    if (selectedVariant.colorName) wppTextMsg += `Color: ${selectedVariant.colorName}\n`;
-    if (selectedManivela) wppTextMsg += `Manivela: ${selectedManivela}\n`;
-    if (selectedSize) wppTextMsg += `${sizeData.label}: ${selectedSize}\n`; // Añade la talla o medida si existe
-    wppTextMsg += `Cantidad: ${quantity}\n\nLink: ${linkPublicacion}`;
-
-    const wppText = encodeURIComponent(wppTextMsg);
-
     const formatPrice = (amount: number) => {
         if (amount < 1000) {
-            // Para cientos y decenas (ej: 99.00, 799.00)
             return `$ ${amount.toFixed(2)}`;
         } else {
-            // Para miles (ej: 1,700, 11,200) sin decimales
             const integerPart = Math.floor(amount).toString();
             const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return `$ ${formattedInteger}`;
@@ -109,7 +96,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">{product.brand}</p>
                             <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black text-gray-900 dark:text-white uppercase leading-tight">{product.title}</h1>
                         </div>
-                        <ShareButton title={product.title} url={linkPublicacion} text={product.description} showText={false} className="p-2.5 bg-gray-100 dark:bg-white/5 rounded-full hover:text-action-yellow ml-4 shrink-0" />
+                        <ShareButton title={product.title} url={`https://bass-orilla.vercel.app/catalogo/${product.slug}`} text={product.description} showText={false} className="p-2.5 bg-gray-100 dark:bg-white/5 rounded-full hover:text-action-yellow ml-4 shrink-0" />
                     </div>
                     <div className="flex items-center mt-3 space-x-4">
                         <div className="flex items-center text-action-yellow">
@@ -132,6 +119,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                         ) : (
                             <span className="block text-3xl font-black text-gray-900 dark:text-white">{formatPrice(product.price)}</span>
                         )}
+                    </div>
+                    <div className="text-right">
+                        <div className="bg-action-yellow/20 text-yellow-700 dark:text-yellow-400 px-2 py-1 rounded text-xs font-bold border border-action-yellow/40 flex items-center gap-1"><Ticket size={12} /> Boletos Gratis</div>
+                        <p className="text-[10px] text-gray-500 font-bold mt-1 uppercase">Cada $100 de compra</p>
                     </div>
                 </div>
 
@@ -190,14 +181,33 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             <button onClick={() => setQuantity(quantity + 1)} className="px-3 h-full text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"><Plus size={16} /></button>
                         </div>
 
-                        <a
-                            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${wppText}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`flex-1 font-bold text-sm sm:text-base uppercase h-12 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-all ${selectedVariant.inStock ? 'bg-action-yellow hover:bg-yellow-400 text-black hover:shadow-md' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed'}`}
+                        {/* BOTÓN AGREGAR AL CARRITO */}
+                        <button
+                            onClick={() => {
+                                if (!selectedVariant.inStock) return;
+                                addToCart({
+                                    productId: product.id,
+                                    slug: product.slug,
+                                    title: product.title,
+                                    price: product.discount_price || product.price,
+                                    image: selectedVariant.imageUrl,
+                                    quantity: quantity,
+                                    color: selectedVariant.colorName,
+                                    manivela: selectedManivela,
+                                    size: selectedSize
+                                });
+                            }}
+                            disabled={!selectedVariant.inStock}
+                            className={`flex-1 font-bold text-sm sm:text-base uppercase h-12 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-all ${selectedVariant.inStock ? 'bg-action-yellow hover:bg-yellow-400 text-black hover:shadow-md cursor-pointer' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed'}`}
                         >
-                            <ShoppingCart size={18} /> {selectedVariant.inStock ? 'Agregar' : 'Agotado'}
-                        </a>
+                            <ShoppingCart size={18} /> {selectedVariant.inStock ? 'Agregar al Carrito' : 'Agotado'}
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-[10px] sm:text-xs font-medium text-center text-gray-500 border-t border-gray-200 dark:border-gray-800 pt-5">
+                        <div className="flex flex-col items-center gap-1"><Truck size={18} className="text-gray-400" /><span>Envíos Nacionales</span></div>
+                        <div className="flex flex-col items-center gap-1"><Shield size={18} className="text-gray-400" /><span>Compra Segura</span></div>
+                        <div className="flex flex-col items-center gap-1"><RotateCcw size={18} className="text-gray-400" /><span>Atención Personal</span></div>
                     </div>
                 </div>
             </div>
