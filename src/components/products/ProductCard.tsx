@@ -30,19 +30,21 @@ export default function ProductCard({
 }: ProductCardProps) {
   // Determinamos la imagen principal (la de la primera variante)
   const mainImage = variants?.[0]?.imageUrl || '/placeholder.png';
-  
+
   // Verificamos si hay al menos una variante en stock
   const isAvailable = variants?.some(v => v.inStock);
 
   // === FUNCIÓN PARA FORMATEAR EL PRECIO ===
-  // Esto convierte 11279 a "$ 11,279" sin decimales innecesarios
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-      minimumFractionDigits: 0, // No muestra decimales si es un número entero
-      maximumFractionDigits: 0,
-    }).format(amount);
+    if (amount < 1000) {
+      // Para cientos y decenas (ej: 99.00, 799.00)
+      return `$ ${amount.toFixed(2)}`;
+    } else {
+      // Para miles (ej: 1,700, 11,200) sin decimales
+      const integerPart = Math.floor(amount).toString();
+      const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return `$ ${formattedInteger}`;
+    }
   };
 
   return (

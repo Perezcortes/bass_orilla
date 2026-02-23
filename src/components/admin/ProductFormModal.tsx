@@ -50,7 +50,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
     const [formData, setFormData] = useState({
         title: '', brand: '', description: '', price: 0, discount_price: 0 as number | null,
         department: 'Agua Dulce', category: 'Señuelos', subcategory: 'Plásticos',
-        specs: '' // Cambiado a string para el textarea
+        specs: ''
     });
 
     const [variants, setVariants] = useState<Variant[]>([{ colorName: '', imageUrl: '', inStock: true, file: null, previewUrl: '' }]);
@@ -61,7 +61,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                 title: productToEdit.title, brand: productToEdit.brand, description: productToEdit.description,
                 price: productToEdit.price, discount_price: productToEdit.discount_price,
                 department: productToEdit.department, category: productToEdit.category, subcategory: productToEdit.subcategory,
-                specs: typeof productToEdit.specs === 'string' ? productToEdit.specs : '' 
+                specs: typeof productToEdit.specs === 'string' ? productToEdit.specs : ''
             });
             setVariants(productToEdit.variants.map((v: any) => ({ ...v, file: null, previewUrl: v.imageUrl })));
         } else {
@@ -123,6 +123,11 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
             }
             return { colorName: v.colorName, imageUrl: finalUrl, inStock: v.inStock };
         }));
+
+        if (finalVariants.some(v => !v.imageUrl)) {
+            alert('Todas las variantes deben tener una imagen.');
+            setIsProcessing(false); return;
+        }
 
         const payload = { ...formData, slug: generatedSlug, variants: finalVariants };
 
@@ -186,9 +191,29 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
 
                         {/* ESPECIFICACIONES (TEXTAREA) */}
                         <div>
-                            <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-2"><Settings size={18}/> Especificaciones Técnicas</h4>
-                            <p className="text-xs text-gray-500 mb-2">Pega aquí la ficha técnica. Formato: <b>Nombre: Valor</b> (una por línea). Para la manivela usa: <b>Manivela: Derecha, Izquierda</b></p>
-                            <textarea rows={6} value={formData.specs} onChange={(e) => setFormData({ ...formData, specs: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none resize-none font-mono" placeholder="Marca: Shimano&#10;Relación: 6.3:1&#10;Manivela: Derecha, Izquierda" />
+                            <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-2">
+                                <Settings size={18} /> Especificaciones Técnicas
+                            </h4>
+                            <div className="text-xs text-gray-500 mb-3 space-y-2">
+                                <p>Pega aquí la ficha técnica. Formato: <b>Nombre: Valor</b> (una por línea).</p>
+                                <div className="bg-action-yellow/10 border border-action-yellow/20 p-3 rounded-lg text-yellow-800 dark:text-yellow-500">
+                                    <p className="font-bold mb-1">RECUERDA:</p>
+                                    <p>Si usas estas palabras separando las opciones por comas, se crearán botones para que el cliente elija:</p>
+                                    <ul className="list-disc pl-4 mt-1 space-y-1">
+                                        <li><b>Manivela:</b> Derecha, Izquierda</li>
+                                        <li><b>Tallas:</b> XS, S, M, L, XL</li>
+                                        <li><b>Medidas:</b> 1/0, 2/0, 3/0</li>
+                                        <li><b>Pesos:</b> 1/16 oz, 1/8 oz, 1/4 oz</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <textarea 
+                                rows={8} 
+                                value={formData.specs} 
+                                onChange={(e) => setFormData({ ...formData, specs: e.target.value })} 
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none resize-none font-mono leading-relaxed placeholder-gray-400 dark:placeholder-gray-600" 
+                                placeholder="Marca: Shimano&#10;Relación: 6.3:1&#10;Manivela: Derecha, Izquierda&#10;Tallas: M, L, XL&#10;Medidas: 1/0, 2/0, 3/0" 
+                            />
                         </div>
 
                         <div className="border-t border-gray-200 dark:border-gray-800 my-6"></div>
@@ -203,12 +228,25 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                                             <input type="file" accept="image/*" onChange={(e) => handleVariantImageChange(index, e)} className="absolute inset-0 opacity-0 cursor-pointer" />
                                         </div>
                                         <div className="flex-1 space-y-2">
-                                            <input required type="text" placeholder="Nombre del color" value={variant.colorName} onChange={(e) => handleVariantChange(index, 'colorName', e.target.value)} className="w-full px-3 py-1.5 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded text-xs text-gray-900 dark:text-white outline-none focus:border-action-yellow" />
+                                            {/* Le quitamos el "required" y actualizamos el placeholder */}
+                                            <input
+                                                type="text"
+                                                placeholder="Variante / color (Opcional)"
+                                                value={variant.colorName}
+                                                onChange={(e) => handleVariantChange(index, 'colorName', e.target.value)}
+                                                className="w-full px-3 py-1.5 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded text-xs text-gray-900 dark:text-white outline-none focus:border-action-yellow"
+                                            />
                                             <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
-                                                <input type="checkbox" checked={variant.inStock} onChange={(e) => handleVariantChange(index, 'inStock', e.target.checked)} className="accent-action-yellow w-4 h-4 rounded" /> En Stock
+                                                <input
+                                                    type="checkbox"
+                                                    checked={variant.inStock}
+                                                    onChange={(e) => handleVariantChange(index, 'inStock', e.target.checked)}
+                                                    className="accent-action-yellow w-4 h-4 rounded"
+                                                />
+                                                En Stock
                                             </label>
                                         </div>
-                                        {variants.length > 1 && <button type="button" onClick={() => removeVariant(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"><MinusCircle size={14} /></button>}
+                                        {variants.length > 1 && <button type="button" onClick={() => removeVariant(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"><MinusCircle size={14} /></button>}
                                     </div>
                                 ))}
                                 <button type="button" onClick={addVariant} className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-xl text-gray-400 hover:text-action-yellow hover:border-action-yellow transition-all"><PlusCircle size={20} /> Añadir Color</button>
@@ -219,7 +257,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
 
                 <div className="p-6 border-t border-gray-100 dark:border-gray-800 shrink-0 bg-gray-50 dark:bg-[#1A1A1A] flex gap-3">
                     <button type="button" onClick={onClose} className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-white transition-colors">Cancelar</button>
-                    <button type="submit" form="productForm" disabled={isProcessing} className="flex-[2] px-4 py-3 bg-action-yellow text-[#1A1A1A] rounded-lg text-sm font-bold hover:bg-yellow-400 transition-colors flex justify-center items-center">
+                    <button type="submit" form="productForm" disabled={isProcessing} className="flex-[2] px-4 py-3 bg-action-yellow text-[#1A1A1A] rounded-lg text-sm font-bold hover:bg-yellow-400 transition-colors flex justify-center items-center shadow-lg">
                         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : 'Guardar Producto'}
                     </button>
                 </div>

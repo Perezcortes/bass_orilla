@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import {
     Star, Minus, Plus, ShoppingCart,
-    Truck, Shield, RotateCcw, CheckCircle, Ticket, PackageX, Package, CreditCard
+    Truck, Shield, RotateCcw, CheckCircle, Ticket, PackageX,
+    Package, CreditCard
 } from 'lucide-react';
 import ZoomableImage from '@/components/ui/ZoomableImage';
 import ShareButton from '@/components/ui/ShareButton';
@@ -22,12 +23,34 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     const [activeTab, setActiveTab] = useState('description');
     const [selectedVariant, setSelectedVariant] = useState<Variant>(product.variants[0]);
 
-    // === LÓGICA DE SPECS Y MANIVELA ===
+    // === LÓGICA DE SPECS INTELIGENTES ===
     const specsText = product.specs || "";
-    const manivelaLine = specsText.split('\n').find(l => l.toLowerCase().includes('manivela'));
-    const manivelaOptions = manivelaLine ? manivelaLine.split(':')[1].split(',').map(s => s.trim()) : [];
-    const [selectedManivela, setSelectedManivela] = useState<string>(manivelaOptions[0] || '');
 
+    // Función extractora genérica: Busca palabras clave y devuelve opciones separadas por coma
+    const parseVariantOptions = (text: string, keys: string[]) => {
+        const line = text.split('\n').find(l => {
+            if (!l.includes(':')) return false;
+            const key = l.split(':')[0].toLowerCase().trim();
+            return keys.includes(key);
+        });
+        if (!line) return { label: '', options: [] };
+
+        const parts = line.split(':');
+        const label = parts[0].trim(); // Conserva la capitalización original (Ej: "Tallas", "Medidas")
+        const options = parts.slice(1).join(':').split(',').map(s => s.trim());
+        return { label, options };
+    };
+
+    // 1. Manivela
+    const manivelaData = parseVariantOptions(specsText, ['manivela']);
+    const [selectedManivela, setSelectedManivela] = useState<string>(manivelaData.options[0] || '');
+
+    // 2. Medidas / Tallas / Pesos
+    const sizeData = parseVariantOptions(specsText, ['talla', 'tallas', 'medida', 'medidas', 'tamaño', 'tamaños', 'peso', 'pesos']);
+    const [selectedSize, setSelectedSize] = useState<string>(sizeData.options[0] || '');
+
+
+    // === WHATSAPP Y PRECIOS ===
     const WHATSAPP_NUMBER = "529531447499";
     const DOMINIO = "https://bass-orilla.vercel.app";
     const linkPublicacion = `${DOMINIO}/catalogo/${product.slug}`;
@@ -35,17 +58,21 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     let wppTextMsg = `Hola, me interesa comprar este producto:\n\n*${product.title}*\n`;
     if (selectedVariant.colorName) wppTextMsg += `Color: ${selectedVariant.colorName}\n`;
     if (selectedManivela) wppTextMsg += `Manivela: ${selectedManivela}\n`;
+    if (selectedSize) wppTextMsg += `${sizeData.label}: ${selectedSize}\n`; // Añade la talla o medida si existe
     wppTextMsg += `Cantidad: ${quantity}\n\nLink: ${linkPublicacion}`;
 
     const wppText = encodeURIComponent(wppTextMsg);
 
-    // === NUEVO FORMATEADOR DE PRECIOS EXACTO ===
-    // Devuelve exactamente: "$ 11,279" sin decimales
     const formatPrice = (amount: number) => {
-        return "$ " + new Intl.NumberFormat('es-MX', {
-            minimumFractionDigits: 0, 
-            maximumFractionDigits: 0
-        }).format(amount);
+        if (amount < 1000) {
+            // Para cientos y decenas (ej: 99.00, 799.00)
+            return `$ ${amount.toFixed(2)}`;
+        } else {
+            // Para miles (ej: 1,700, 11,200) sin decimales
+            const integerPart = Math.floor(amount).toString();
+            const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return `$ ${formattedInteger}`;
+        }
     };
 
     return (
@@ -108,7 +135,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                     </div>
                 </div>
 
-                {/* SELECTORES */}
+                {/* SELECTORES DINÁMICOS */}
                 <div className="space-y-5 mb-8">
                     {product.variants.length > 1 && (
                         <div>
@@ -117,15 +144,34 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                         </div>
                     )}
 
-                    {manivelaOptions.length > 0 && (
+                    {/* Generador del Selector de Manivela */}
+                    {manivelaData.options.length > 0 && (
                         <div>
-                            <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">Manivela:</h3>
+                            <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">{manivelaData.label}:</h3>
                             <div className="flex gap-2">
-                                {manivelaOptions.map(opt => (
+                                {manivelaData.options.map(opt => (
                                     <button
                                         key={opt}
                                         onClick={() => setSelectedManivela(opt)}
                                         className={`px-4 py-2 rounded-lg font-bold text-sm border transition-all ${selectedManivela === opt ? 'border-action-yellow bg-action-yellow text-black' : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-400'}`}
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Generador del Selector de Tallas/Medidas/Pesos */}
+                    {sizeData.options.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">{sizeData.label}:</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {sizeData.options.map(opt => (
+                                    <button
+                                        key={opt}
+                                        onClick={() => setSelectedSize(opt)}
+                                        className={`px-4 py-2 rounded-lg font-bold text-sm border transition-all ${selectedSize === opt ? 'border-action-yellow bg-action-yellow text-black' : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-400'}`}
                                     >
                                         {opt}
                                     </button>
@@ -153,16 +199,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             <ShoppingCart size={18} /> {selectedVariant.inStock ? 'Hacer Pedido' : 'Agotado'}
                         </a>
                     </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-[10px] sm:text-xs font-medium text-center text-gray-500 border-t border-gray-200 dark:border-gray-800 pt-5">
-                        <div className="flex flex-col items-center gap-1"><Truck size={18} className="text-gray-400" /><span>Envíos Nacionales</span></div>
-                        <div className="flex flex-col items-center gap-1"><Shield size={18} className="text-gray-400" /><span>Compra Segura</span></div>
-                        <div className="flex flex-col items-center gap-1"><RotateCcw size={18} className="text-gray-400" /><span>Atención Personal</span></div>
-                    </div>
                 </div>
             </div>
 
-            {/* PESTAÑAS */}
+            {/* PESTAÑAS Y TABLA DE ESPECIFICACIONES */}
             <div className="lg:col-span-12 mt-8 border-t border-gray-200 dark:border-gray-800 pt-8">
                 <div className="flex gap-6 sm:gap-10 border-b border-gray-200 dark:border-gray-800 mb-6 overflow-x-auto no-scrollbar">
                     {['description', 'specs', 'shipping'].map(tab => (
@@ -177,24 +217,33 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 </div>
                 <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 text-sm sm:text-base">
                     {activeTab === 'description' && <div className="whitespace-pre-wrap leading-relaxed">{product.description || "Sin descripción disponible."}</div>}
+
                     {activeTab === 'specs' && (
-                        <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                        <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
                             <table className="w-full text-sm text-left"><tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                                 {specsText.split('\n').map((line, i) => {
                                     if (!line.includes(':')) return null;
                                     const [key, ...val] = line.split(':');
                                     return (
-                                        <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5">
-                                            <th className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 font-bold uppercase bg-gray-50 dark:bg-black/20 w-1/3 md:w-1/4 text-xs sm:text-sm">{key.trim()}</th>
+                                        <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                            <th className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 font-bold uppercase bg-gray-50 dark:bg-[#111110] w-1/3 md:w-1/4 text-xs sm:text-sm">{key.trim()}</th>
                                             <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-gray-900 dark:text-white text-xs sm:text-sm">{val.join(':').trim()}</td>
                                         </tr>
                                     );
                                 })}
+                                {/* Si no escribiste nada, por lo menos muestra la marca */}
+                                {!specsText && (
+                                    <tr className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                        <th className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 font-bold uppercase bg-gray-50 dark:bg-[#111110] w-1/3 md:w-1/4 text-xs sm:text-sm">Marca</th>
+                                        <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-gray-900 dark:text-white text-xs sm:text-sm">{product.brand}</td>
+                                    </tr>
+                                )}
                             </tbody></table>
                         </div>
                     )}
+
                     {activeTab === 'shipping' && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 mt-4">
                             <div className="flex items-start gap-3">
                                 <div className="bg-gray-100 dark:bg-[#111110] p-3 rounded-xl text-gray-500 dark:text-gray-400 shrink-0 border border-gray-200 dark:border-gray-800">
                                     <Package size={24} />
@@ -206,7 +255,6 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                                     </p>
                                 </div>
                             </div>
-
                             <div className="flex items-start gap-3">
                                 <div className="bg-gray-100 dark:bg-[#111110] p-3 rounded-xl text-gray-500 dark:text-gray-400 shrink-0 border border-gray-200 dark:border-gray-800">
                                     <CreditCard size={24} />
