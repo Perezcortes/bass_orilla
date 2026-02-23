@@ -120,10 +120,6 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             <span className="block text-3xl font-black text-gray-900 dark:text-white">{formatPrice(product.price)}</span>
                         )}
                     </div>
-                    <div className="text-right">
-                        <div className="bg-action-yellow/20 text-yellow-700 dark:text-yellow-400 px-2 py-1 rounded text-xs font-bold border border-action-yellow/40 flex items-center gap-1"><Ticket size={12} /> Boletos Gratis</div>
-                        <p className="text-[10px] text-gray-500 font-bold mt-1 uppercase">Cada $100 de compra</p>
-                    </div>
                 </div>
 
                 {/* SELECTORES DINÁMICOS */}

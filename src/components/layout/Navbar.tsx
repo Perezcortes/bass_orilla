@@ -47,7 +47,7 @@ export default function Navbar() {
     { href: '/', label: 'Inicio' },
     { href: '/publicaciones', label: 'Sorteos' },
     { href: '/catalogo', label: 'Catálogo' },
-    { href: '#marcas', label: 'Marcas' },
+    { href: '/marcas', label: 'Marcas' },
     { href: '/contacto', label: 'Contacto' },
   ];
 

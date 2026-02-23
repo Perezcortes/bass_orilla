@@ -13,7 +13,7 @@ export default function Hero() {
         {/* usar la etiqueta <picture> de HTML estándar */}
         <picture>
           {/* Para pantallas grandes (min-width: 768px), usa esta imagen.*/}
-          <source media="(min-width: 768px)" srcSet="/fondo-pri.jpeg" />
+          <source media="(min-width: 768px)" srcSet="/fondo-g.png" />
 
           {/* Para móviles (imagen por defecto) */}
           <Image
