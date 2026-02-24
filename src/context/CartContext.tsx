@@ -13,6 +13,7 @@ export type CartItem = {
   color?: string;
   manivela?: string;
   size?: string;
+  resistencia?: string;
 };
 
 interface CartContextType {
@@ -46,18 +47,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (newItem: Omit<CartItem, 'cartId'>) => {
     // Creamos un ID único combinando el producto y las variantes elegidas
-    const cartId = `${newItem.productId}-${newItem.color || ''}-${newItem.manivela || ''}-${newItem.size || ''}`;
+    const cartId = `${newItem.productId}-${newItem.color || ''}-${newItem.manivela || ''}-${newItem.size || ''}-${newItem.resistencia || ''}`;
     
     setItems(current => {
       const existingItem = current.find(item => item.cartId === cartId);
       if (existingItem) {
-        return current.map(item => 
+        return current.map(item =>
           item.cartId === cartId ? { ...item, quantity: item.quantity + newItem.quantity } : item
         );
       }
       return [...current, { ...newItem, cartId }];
     });
-    
+
     // Abrimos el carrito automáticamente al agregar algo
     setIsCartOpen(true);
   };

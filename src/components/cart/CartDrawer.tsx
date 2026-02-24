@@ -29,6 +29,7 @@ export default function CartDrawer() {
       if (item.color) text += `   Color: ${item.color}\n`;
       if (item.manivela) text += `   Manivela: ${item.manivela}\n`;
       if (item.size) text += `   Talla/Medida: ${item.size}\n`;
+      if (item.resistencia) text += `   Resistencia: ${item.resistencia}\n`;
       text += `   Cantidad: ${item.quantity} x ${formatPrice(item.price)}\n`;
       text += `   Link: https://bass-orilla.vercel.app/catalogo/${item.slug}\n\n`;
     });
@@ -84,6 +85,7 @@ export default function CartDrawer() {
                         {item.color && <p>Color: {item.color}</p>}
                         {item.manivela && <p>Manivela: {item.manivela}</p>}
                         {item.size && <p>Medida: {item.size}</p>}
+                        {item.resistencia && <p>Resistencia: {item.resistencia}</p>}
                       </div>
                     </div>
                     <div className="flex items-end justify-between mt-2">

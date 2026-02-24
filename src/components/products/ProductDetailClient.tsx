@@ -23,9 +23,9 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
     const [selectedVariant, setSelectedVariant] = useState<Variant>(product.variants[0]);
-    
+
     // Obtenemos la función para agregar al carrito
-    const { addToCart } = useCart(); 
+    const { addToCart } = useCart();
 
     // === LÓGICA DE SPECS INTELIGENTES ===
     const specsText = product.specs || "";
@@ -39,7 +39,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         if (!line) return { label: '', options: [] };
 
         const parts = line.split(':');
-        const label = parts[0].trim(); 
+        const label = parts[0].trim();
         const options = parts.slice(1).join(':').split(',').map(s => s.trim());
         return { label, options };
     };
@@ -51,6 +51,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     // 2. Medidas / Tallas / Pesos
     const sizeData = parseVariantOptions(specsText, ['talla', 'tallas', 'medida', 'medidas', 'tamaño', 'tamaños', 'peso', 'pesos']);
     const [selectedSize, setSelectedSize] = useState<string>(sizeData.options[0] || '');
+
+    // 3. Resistencia 
+    const resistenciaData = parseVariantOptions(specsText, ['resistencia', 'resistencias', 'libraje']);
+    const [selectedResistencia, setSelectedResistencia] = useState<string>(resistenciaData.options[0] || '');
 
     const formatPrice = (amount: number) => {
         if (amount < 1000) {
@@ -166,6 +170,24 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             </div>
                         </div>
                     )}
+
+                    {/* Generador del Selector de Resistencia */}
+                    {resistenciaData.options.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">{resistenciaData.label}:</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {resistenciaData.options.map(opt => (
+                                    <button
+                                        key={opt}
+                                        onClick={() => setSelectedResistencia(opt)}
+                                        className={`px-4 py-2 rounded-lg font-bold text-sm border transition-all ${selectedResistencia === opt ? 'border-action-yellow bg-action-yellow text-black' : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-400'}`}
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* ACCIONES COMPRA */}
@@ -190,7 +212,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                                     quantity: quantity,
                                     color: selectedVariant.colorName,
                                     manivela: selectedManivela,
-                                    size: selectedSize
+                                    size: selectedSize,
+                                    resistencia: selectedResistencia
                                 });
                             }}
                             disabled={!selectedVariant.inStock}
