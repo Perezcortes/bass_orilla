@@ -204,6 +204,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                                         <li><b>Tallas:</b> XS, S, M, L, XL</li>
                                         <li><b>Medidas:</b> 1/0, 2/0, 3/0</li>
                                         <li><b>Pesos:</b> 1/16 oz, 1/8 oz, 1/4 oz</li>
+                                        <li><b>Resistencia:</b> 12LBS, 16LBS, 20LBS</li>
                                     </ul>
                                 </div>
                             </div>
