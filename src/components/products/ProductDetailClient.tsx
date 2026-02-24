@@ -56,6 +56,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     const resistenciaData = parseVariantOptions(specsText, ['resistencia', 'resistencias', 'libraje']);
     const [selectedResistencia, setSelectedResistencia] = useState<string>(resistenciaData.options[0] || '');
 
+    // 4. Longitud (pulgadas)
+    const longitudData = parseVariantOptions(specsText, ['longitud', 'longitudes', 'pulgada', 'pulgadas']);
+    const [selectedLongitud, setSelectedLongitud] = useState<string>(longitudData.options[0] || '');
+
     const formatPrice = (amount: number) => {
         if (amount < 1000) {
             return `$ ${amount.toFixed(2)}`;
@@ -188,6 +192,25 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                             </div>
                         </div>
                     )}
+
+                    {/* Generador del Selector de Longitud */}
+                    {longitudData.options.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">{longitudData.label}:</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {longitudData.options.map(opt => (
+                                    <button
+                                        key={opt}
+                                        onClick={() => setSelectedLongitud(opt)}
+                                        className={`px-4 py-2 rounded-lg font-bold text-sm border transition-all ${selectedLongitud === opt ? 'border-action-yellow bg-action-yellow text-black' : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-400'}`}
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
                 {/* ACCIONES COMPRA */}
@@ -213,7 +236,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                                     color: selectedVariant.colorName,
                                     manivela: selectedManivela,
                                     size: selectedSize,
-                                    resistencia: selectedResistencia
+                                    resistencia: selectedResistencia,
+                                    longitud: selectedLongitud,
                                 });
                             }}
                             disabled={!selectedVariant.inStock}

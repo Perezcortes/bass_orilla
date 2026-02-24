@@ -205,15 +205,16 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                                         <li><b>Medidas:</b> 1/0, 2/0, 3/0</li>
                                         <li><b>Pesos:</b> 1/16 oz, 1/8 oz, 1/4 oz</li>
                                         <li><b>Resistencia:</b> 12LBS, 16LBS, 20LBS</li>
+                                        <li><b>Longitud (pulgadas):</b> 3/4", 1"</li>
                                     </ul>
                                 </div>
                             </div>
-                            <textarea 
-                                rows={8} 
-                                value={formData.specs} 
-                                onChange={(e) => setFormData({ ...formData, specs: e.target.value })} 
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none resize-none font-mono leading-relaxed placeholder-gray-400 dark:placeholder-gray-600" 
-                                placeholder="Marca: Shimano&#10;Relación: 6.3:1&#10;Manivela: Derecha, Izquierda&#10;Tallas: M, L, XL&#10;Medidas: 1/0, 2/0, 3/0" 
+                            <textarea
+                                rows={8}
+                                value={formData.specs}
+                                onChange={(e) => setFormData({ ...formData, specs: e.target.value })}
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none resize-none font-mono leading-relaxed placeholder-gray-400 dark:placeholder-gray-600"
+                                placeholder="Marca: Shimano&#10;Relación: 6.3:1&#10;Manivela: Derecha, Izquierda&#10;Tallas: M, L, XL&#10;Medidas: 1/0, 2/0, 3/0"
                             />
                         </div>
 

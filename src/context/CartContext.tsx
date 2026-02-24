@@ -14,6 +14,7 @@ export type CartItem = {
   manivela?: string;
   size?: string;
   resistencia?: string;
+  longitud?: string;
 };
 
 interface CartContextType {
@@ -47,8 +48,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (newItem: Omit<CartItem, 'cartId'>) => {
     // Creamos un ID único combinando el producto y las variantes elegidas
-    const cartId = `${newItem.productId}-${newItem.color || ''}-${newItem.manivela || ''}-${newItem.size || ''}-${newItem.resistencia || ''}`;
-    
+    const cartId = `${newItem.productId}-${newItem.color || ''}-${newItem.manivela || ''}-${newItem.size || ''}-${newItem.resistencia || ''}-${newItem.longitud || ''}`;
+
     setItems(current => {
       const existingItem = current.find(item => item.cartId === cartId);
       if (existingItem) {
