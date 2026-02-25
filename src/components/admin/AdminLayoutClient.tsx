@@ -35,10 +35,10 @@ export default function AdminLayoutClient({
     { name: 'Publicidad', href: '/dashboard/publicidad', icon: Megaphone },
   ];
 
-  const handleLogout = async () => {
+const handleLogout = async () => {
+    // 1. Destruimos la sesión en Supabase (limpia las cookies)
     await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/login';
   };
 
   return (
