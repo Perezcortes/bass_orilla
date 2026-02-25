@@ -43,9 +43,12 @@ export default function ProductCard({
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden hover:-translate-y-1 flex flex-col h-full">
+    <div className="group bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 overflow-hidden hover:-translate-y-1 flex flex-col h-full">
+      {/* CAMBIO 1: dark:bg-[#1A1A1A] en lugar de dark:bg-gray-900 y borde dark:border-gray-800 */}
+      
       {/* SECCIÓN DE IMAGEN */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-white dark:bg-gray-800 p-2 sm:p-4">
+      {/* CAMBIO 2: Fondo de la imagen en dark:bg-[#111110] (casi negro) para mayor profundidad */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-white dark:bg-[#111110] p-2 sm:p-4">
         {discount_price && (
           <span className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded uppercase tracking-wider shadow-md">
             OFERTA
@@ -59,9 +62,10 @@ export default function ProductCard({
           className="object-contain p-2 sm:p-4 transform group-hover:scale-105 transition-transform duration-500"
         />
 
-        {/* Overlay Hover (Se oculta en móviles muy pequeños para no estorbar) */}
+        {/* Overlay Hover */}
         <div className="hidden sm:flex absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-end p-4">
-          <Link href={`/catalogo/${slug}`} className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-action-yellow hover:text-black dark:hover:bg-action-yellow transition-colors flex justify-center items-center gap-2">
+          {/* CAMBIO 3: Botón Ver detalles en dark mode tiene fondo dark:bg-[#2A2A2A] neutro */}
+          <Link href={`/catalogo/${slug}`} className="w-full bg-white dark:bg-[#2A2A2A] text-gray-900 dark:text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-[#4d7c0f] hover:text-white dark:hover:bg-[#4d7c0f] dark:hover:text-white transition-colors flex justify-center items-center gap-2">
             <Eye size={18} /> Ver Detalles
           </Link>
         </div>
@@ -99,7 +103,7 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Precio y Botón (Apilados en móvil, en línea en PC) */}
+        {/* Precio y Botón */}
         <div className="flex flex-col xl:flex-row xl:items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-3 sm:pt-4 mt-auto gap-2">
           <div className="flex flex-row xl:flex-col items-center xl:items-start gap-2 xl:gap-0">
             {discount_price ? (
@@ -120,7 +124,7 @@ export default function ProductCard({
 
           <Link
             href={`/catalogo/${slug}`}
-            className="w-full xl:w-auto bg-action-yellow hover:bg-yellow-400 text-[#1A1A1A] px-3 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md group/btn"
+            className="w-full xl:w-auto bg-[#4d7c0f] hover:bg-[#1e3c1a] text-white px-3 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md group/btn"
           >
             <ShoppingCart size={14} className="group-hover/btn:rotate-12 transition-transform" />
             <span className="xl:hidden">Ver</span>

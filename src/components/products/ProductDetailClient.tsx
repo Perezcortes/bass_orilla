@@ -241,7 +241,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                                 });
                             }}
                             disabled={!selectedVariant.inStock}
-                            className={`flex-1 font-bold text-sm sm:text-base uppercase h-12 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-all ${selectedVariant.inStock ? 'bg-action-yellow hover:bg-yellow-400 text-black hover:shadow-md cursor-pointer' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed'}`}
+                            className={`flex-1 font-bold text-sm sm:text-base uppercase h-12 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-all ${selectedVariant.inStock ? 'bg-[#4d7c0f] hover:bg-[#1e3c1a] text-white hover:shadow-md cursor-pointer' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed'}`}
                         >
                             <ShoppingCart size={18} /> {selectedVariant.inStock ? 'Agregar al Carrito' : 'Agotado'}
                         </button>
