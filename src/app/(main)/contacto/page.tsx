@@ -30,12 +30,12 @@ export default function ContactoPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#111110] transition-colors duration-300">
       
-      {/* 1. HERO SECTION CON FONDO PARALLAX */}
+      {/* 1. HERO SECTION CON FONDO PARALLAX RESPONSIVO */}
       <div className="relative py-20 sm:py-32 md:py-48 px-4 sm:px-6 lg:px-8 flex items-center justify-center overflow-hidden">
         
-        {/* Imagen de Fondo Parallax */}
+        {/* Imagen de Fondo Parallax (Responsiva: 'sus.jpeg' en móvil, 'fondo-g.png' en escritorio) */}
         <div 
-          className="absolute inset-0 z-0 bg-[url('/fondo-g.png')] bg-fixed bg-cover bg-center"
+          className="absolute inset-0 z-0 bg-fixed bg-cover bg-center bg-[url('/sus.jpeg')] md:bg-[url('/fondo-g.png')]"
         />
         
         {/* Overlay oscuro para legibilidad (Gris azulado muy oscuro para dar tono premium) */}
