@@ -187,7 +187,7 @@ export default function Navbar() {
               )}
             </button>
 
-            <Link href="/sorteos" className="hidden md:flex bg-action-yellow hover:bg-yellow-500 text-carbon-black px-6 py-2 rounded-full font-bold text-sm shadow-lg">
+            <Link href="/publicaciones" className="hidden md:flex bg-action-yellow hover:bg-yellow-500 text-carbon-black px-6 py-2 rounded-full font-bold text-sm shadow-lg">
               Participar
             </Link>
 

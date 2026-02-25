@@ -49,7 +49,7 @@ export default function Hero() {
         </div>
 
         <p className="text-gray-100 text-base sm:text-xl max-w-lg md:max-w-2xl mx-auto mb-8 md:mb-12 font-medium drop-shadow-lg leading-relaxed px-2">
-          Participa por el equipo de tus sueños. Cañas, carretes y embarcaciones de las mejores marcas mundiales.
+          “Las mejores marcas en equipo de pesca, disponibles en nuestras rifas.”
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs sm:max-w-none mx-auto">

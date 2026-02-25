@@ -300,7 +300,7 @@ export default async function CatalogoPage({
                   No hay resultados
                 </h3>
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
-                  No encontramos productos que coincidan con estos filtros. Intenta buscar otra marca o ampliar el rango de precio.
+                  Proximamente publicaremos estos productos!.
                 </p>
                 <Link href="/catalogo" className="bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm sm:text-base font-bold hover:bg-action-yellow dark:hover:bg-action-yellow hover:text-black transition-colors">
                   Ver todo el catálogo
