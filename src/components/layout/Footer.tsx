@@ -10,7 +10,7 @@ export default function Footer() {
       title: 'Navegación',
       links: [
         { label: 'Inicio', href: '/' },
-        { label: 'Sorteos Activos', href: '/sorteos' },
+        { label: 'Sorteos Activos', href: '/publicaciones' },
         { label: 'Catálogo', href: '/catalogo' },
         { label: 'Ganadores Anteriores', href: '/ganadores' },
       ],
