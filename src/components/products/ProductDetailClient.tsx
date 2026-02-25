@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
     Star, Minus, Plus, ShoppingCart,
@@ -9,7 +9,8 @@ import {
 } from 'lucide-react';
 import ZoomableImage from '@/components/ui/ZoomableImage';
 import ShareButton from '@/components/ui/ShareButton';
-import { useCart } from '@/context/CartContext'; // <-- Importación agregada
+import { useCart } from '@/context/CartContext';
+import RecentlyViewed from './RecentlyViewed'; 
 
 type Variant = { colorName: string; imageUrl: string; inStock: boolean; };
 type Product = {
@@ -69,6 +70,30 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             return `$ ${formattedInteger}`;
         }
     };
+
+    // === GUARDAR EN "VISTOS RECIENTEMENTE" ===
+    useEffect(() => {
+        if (!product) return;
+        try {
+            // Leemos lo que ya hay guardado
+            const stored = localStorage.getItem('bassorilla_viewed');
+            let viewed = stored ? JSON.parse(stored) : [];
+            
+            // Quitamos el producto si ya estaba en la lista (para no duplicarlo)
+            viewed = viewed.filter((p: Product) => p.id !== product.id);
+            
+            // Lo ponemos al principio de la lista
+            viewed.unshift(product);
+            
+            // Mantenemos solo los últimos 4 para no llenar su memoria
+            if (viewed.length > 4) viewed.pop();
+            
+            // Guardamos la nueva lista
+            localStorage.setItem('bassorilla_viewed', JSON.stringify(viewed));
+        } catch (error) {
+            console.error('Error guardando vistos recientemente', error);
+        }
+    }, [product]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -323,6 +348,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                     )}
                 </div>
             </div>
+
+            {/* SECCIÓN VISTOS RECIENTEMENTE AL FINAL */}
+            <div className="lg:col-span-12">
+                <RecentlyViewed currentProductId={product.id} />
+            </div>
+
         </div>
     );
 }

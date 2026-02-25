@@ -3,6 +3,7 @@ import { PackageX, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import CatalogoFiltersClient from './CatalogoFiltersClient'; 
+import SpecialOrderBanner from '@/components/products/SpecialOrderBanner';
 
 const CATALOG_STRUCTURE: Record<string, Record<string, string[]>> = {
   "Agua Dulce": {
@@ -307,6 +308,12 @@ export default async function CatalogoPage({
                 </Link>
               </div>
             )}
+
+            {/* BANNER DE PEDIDO ESPECIAL (FUERA DE LA CONDICIÓN PARA QUE SIEMPRE SALGA) */}
+            <div className="mt-auto pt-8">
+               <SpecialOrderBanner />
+            </div>
+            
           </main>
 
         </div>
