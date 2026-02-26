@@ -48,7 +48,9 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
     const [isProcessing, setIsProcessing] = useState(false);
 
     const [formData, setFormData] = useState({
-        title: '', brand: '', description: '', price: 0, discount_price: 0 as number | null,
+        title: '', brand: '', description: '', 
+        price: 0 as number | '', // Permitimos string vacío para evitar NaN
+        discount_price: null as number | null,
         department: 'Agua Dulce', category: 'Señuelos', subcategory: 'Plásticos',
         specs: ''
     });
@@ -129,7 +131,13 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
             setIsProcessing(false); return;
         }
 
-        const payload = { ...formData, slug: generatedSlug, variants: finalVariants };
+        // Aseguramos que el precio sea un número para Supabase
+        const payload = { 
+            ...formData, 
+            price: Number(formData.price) || 0,
+            slug: generatedSlug, 
+            variants: finalVariants 
+        };
 
         if (productToEdit) {
             await supabase.from('products').update(payload).eq('id', productToEdit.id);
@@ -166,11 +174,13 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative">
                                         <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="w-full pl-8 pr-4 py-2 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none" placeholder="Precio" />
+                                        {/* Corrección del input de Precio */}
+                                        <input required type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value === '' ? '' : parseFloat(e.target.value) })} className="w-full pl-8 pr-4 py-2 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-900 dark:text-white focus:border-action-yellow outline-none" placeholder="Precio" />
                                     </div>
                                     <div className="relative">
                                         <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400" />
-                                        <input type="number" step="0.01" value={formData.discount_price || ''} onChange={(e) => setFormData({ ...formData, discount_price: e.target.value ? parseFloat(e.target.value) : null })} className="w-full pl-8 pr-4 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-900/30 rounded-lg text-sm text-red-900 dark:text-red-400 focus:border-red-500 outline-none" placeholder="Oferta" />
+                                        {/* Corrección del input de Oferta */}
+                                        <input type="number" step="0.01" value={formData.discount_price ?? ''} onChange={(e) => setFormData({ ...formData, discount_price: e.target.value === '' ? null : parseFloat(e.target.value) })} className="w-full pl-8 pr-4 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-900/30 rounded-lg text-sm text-red-900 dark:text-red-400 focus:border-red-500 outline-none" placeholder="Oferta" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">
@@ -230,7 +240,6 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess, productTo
                                             <input type="file" accept="image/*" onChange={(e) => handleVariantImageChange(index, e)} className="absolute inset-0 opacity-0 cursor-pointer" />
                                         </div>
                                         <div className="flex-1 space-y-2">
-                                            {/* Le quitamos el "required" y actualizamos el placeholder */}
                                             <input
                                                 type="text"
                                                 placeholder="Variante / color (Opcional)"
