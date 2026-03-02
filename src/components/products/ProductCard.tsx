@@ -91,7 +91,7 @@ export default function ProductCard({
             <div className="flex gap-1 items-center">
               {variants.filter(v => v.colorName && v.colorName.trim() !== '').slice(0, 3).map((variant, index) => (
                 <div key={index} className="relative w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm overflow-hidden bg-white" title={variant.colorName}>
-                  <Image src={variant.imageUrl} alt={variant.colorName} fill className="object-cover" />
+                  <Image src={variant.imageUrl || '/placeholder.png'} alt={variant.colorName} fill className="object-cover" />
                 </div>
               ))}
               {variants.filter(v => v.colorName && v.colorName.trim() !== '').length > 3 && (

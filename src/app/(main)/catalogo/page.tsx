@@ -11,7 +11,7 @@ const CATALOG_STRUCTURE: Record<string, Record<string, string[]>> = {
     "Cañas": ["Spinning", "Casting"],
     "Combos": ["Combos Spinning", "Combos Casting", "Combos Spincast"],
     "Señuelos": ["Plásticos", "Curricanes", "Swimbaits", "Spinnerbaits y Buzzbaits", "Jigs y Chatterbaits", "Cucharillas"],
-    "Terminal Tackle": ["Anzuelos y Tercias", "Plomos y Tungstenos", "Jigheads", "Esencias", "Accesorios Varios"]
+    "Terminal Tackle": ["Anzuelos y Tercias", "Plomos y Tungstenos", "Jigheads", "Esencias"]
   },
   "Ropa y Accesorios": {
     "Ropa": ["Buff", "Camisas y jerseys", "Gorras y Sombreros", "Guantes", "Chalecos Salvavidas", "Pantalones y Shorts"],
