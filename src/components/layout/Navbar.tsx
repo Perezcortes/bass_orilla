@@ -136,7 +136,7 @@ export default function Navbar() {
                   Bass<span className="text-action-yellow">Orilla</span>
                 </h1>
                 <span className="text-[10px] lg:text-xs font-bold text-action-yellow tracking-widest uppercase block mt-0.5">
-                  Rifas y Sorteos
+                  Rifas y Articulos
                 </span>
               </div>
             </Link>

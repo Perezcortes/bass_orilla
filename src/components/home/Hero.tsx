@@ -43,7 +43,7 @@ export default function Hero() {
             </h1>
 
             <div className="bg-[#1A1A1A] text-action-yellow font-display font-black text-sm sm:text-xl md:text-2xl px-4 py-1.5 md:px-6 md:py-2 -mt-3 md:-mt-6 transform -rotate-2 rounded-sm border border-white shadow-2xl backdrop-blur-md">
-              RIFAS Y SORTEOS
+              Rifas y Articulos
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function Hero() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs sm:max-w-none mx-auto">
           <Link
-            href="/sorteos"
+            href="/publicaciones"
             className="group w-full sm:w-auto bg-action-yellow text-[#1A1A1A] px-6 py-4 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(249,184,36,0.5)] hover:bg-yellow-300 hover:scale-105 transition-all flex items-center justify-center gap-2"
           >
             <Ticket className="group-hover:rotate-12 transition-transform" size={20} />

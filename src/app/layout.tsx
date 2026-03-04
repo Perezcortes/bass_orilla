@@ -20,7 +20,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: 'BassOrilla - Rifas y Sorteos',
+  title: 'BassOrilla - Rifas y Articulos',
   description: '“Las mejores marcas en equipo de pesca, disponibles en nuestras rifas.”',
 };
 
