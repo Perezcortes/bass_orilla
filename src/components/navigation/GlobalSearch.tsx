@@ -86,7 +86,7 @@ export default function GlobalSearch() {
     e.preventDefault();
     if (query.trim()) {
       setIsOpen(false);
-      router.push(`/catalogo?search=${encodeURIComponent(query)}`);
+      router.push(`/catalogo?q=${encodeURIComponent(query)}`);
     }
   };
 

@@ -2,7 +2,7 @@ import ProductCard from '@/components/products/ProductCard';
 import { PackageX, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import CatalogoFiltersClient from './CatalogoFiltersClient'; 
+import CatalogoFiltersClient from './CatalogoFiltersClient';
 import SpecialOrderBanner from '@/components/products/SpecialOrderBanner';
 
 const CATALOG_STRUCTURE: Record<string, Record<string, string[]>> = {
@@ -53,10 +53,10 @@ export default async function CatalogoPage({
   if (currentDept) query = query.eq('department', currentDept);
   if (currentCat) query = query.eq('category', currentCat);
   if (currentSubcat) query = query.eq('subcategory', currentSubcat);
-  
-  // Filtro de Búsqueda de Texto Avanzada (Busca en título, marca o descripción)
+
+  // Filtro de Búsqueda de Texto Avanzada (Busca en título, marca, descripción o categoría)
   if (currentSearch) {
-    query = query.or(`title.ilike.%${currentSearch}%,brand.ilike.%${currentSearch}%,description.ilike.%${currentSearch}%`);
+    query = query.or(`title.ilike.%${currentSearch}%,brand.ilike.%${currentSearch}%,description.ilike.%${currentSearch}%,category.ilike.%${currentSearch}%`);
   }
 
   // Filtro de Rango de Precios
@@ -88,7 +88,7 @@ export default async function CatalogoPage({
     if (minPrice !== null) params.set('minPrice', minPrice.toString());
     if (maxPrice !== null) params.set('maxPrice', maxPrice.toString());
     if (currentSort && currentSort !== 'recent') params.set('sort', currentSort);
-    
+
     Object.keys(updates).forEach(key => {
       if (updates[key] === undefined) params.delete(key);
       else params.set(key, updates[key] as string);
@@ -99,13 +99,13 @@ export default async function CatalogoPage({
   return (
     <div className="min-h-screen bg-[#FAFAF8] dark:bg-[#111110] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        
+
         {/* Breadcrumb Automático */}
         <nav className="flex items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium overflow-x-auto whitespace-nowrap pb-2">
           <Link href="/" className="hover:text-action-yellow transition-colors">Inicio</Link>
           <ChevronRight size={14} className="mx-2 shrink-0" />
           <Link href="/catalogo" className={`hover:text-action-yellow transition-colors ${!currentDept && !currentSearch ? 'text-gray-900 dark:text-white font-bold' : ''}`}>Catálogo</Link>
-          
+
           {currentSearch && (
             <>
               <ChevronRight size={14} className="mx-2 shrink-0" />
@@ -149,16 +149,16 @@ export default async function CatalogoPage({
           </div>
 
           {/* Componente Cliente para la Búsqueda y Ordenamiento */}
-          <CatalogoFiltersClient 
-            currentSearch={currentSearch} 
-            currentSort={currentSort} 
+          <CatalogoFiltersClient
+            currentSearch={currentSearch}
+            currentSort={currentSort}
             minPrice={minPrice}
             maxPrice={maxPrice}
           />
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          
+
           {/* SIDEBAR - TAXONOMÍA Y FILTROS */}
           <aside className="w-full lg:w-72 flex-shrink-0">
             <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24">
@@ -177,10 +177,10 @@ export default async function CatalogoPage({
               <div className="space-y-6">
                 {Object.keys(CATALOG_STRUCTURE).map((dept) => {
                   const isDeptActive = currentDept === dept;
-                  
+
                   return (
                     <div key={dept} className="border-b border-gray-50 dark:border-gray-800/50 pb-4 last:border-0 last:pb-0">
-                      <Link 
+                      <Link
                         href={buildUrl({ dept, cat: undefined, subcat: undefined, page: '1' })}
                         className={`block font-bold uppercase tracking-wider text-sm mb-3 transition-colors ${isDeptActive ? 'text-action-yellow' : 'text-gray-900 dark:text-white hover:text-action-yellow'}`}
                       >
@@ -194,7 +194,7 @@ export default async function CatalogoPage({
 
                             return (
                               <div key={cat}>
-                                <Link 
+                                <Link
                                   href={buildUrl({ dept, cat, subcat: undefined, page: '1' })}
                                   className={`block text-sm font-medium transition-colors ${isCatActive ? 'text-action-yellow' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                                 >
@@ -206,7 +206,7 @@ export default async function CatalogoPage({
                                     {CATALOG_STRUCTURE[dept][cat].map((subcat) => {
                                       const isSubActive = currentSubcat === subcat;
                                       return (
-                                        <Link 
+                                        <Link
                                           key={subcat}
                                           href={buildUrl({ dept, cat, subcat, page: '1' })}
                                           className={`block text-xs transition-colors ${isSubActive ? 'text-action-yellow font-bold' : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
@@ -261,13 +261,13 @@ export default async function CatalogoPage({
                           // Mostrar solo 5 páginas alrededor de la actual para no desbordar
                           if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
                             return (
-                                <Link 
-                                  key={pageNum}
-                                  href={buildUrl({ page: pageNum.toString() })}
-                                  className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent ? 'bg-action-yellow text-[#1A1A1A] shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-[#1A1A1A]'}`}
-                                >
-                                  {pageNum}
-                                </Link>
+                              <Link
+                                key={pageNum}
+                                href={buildUrl({ page: pageNum.toString() })}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent ? 'bg-action-yellow text-[#1A1A1A] shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-[#1A1A1A]'}`}
+                              >
+                                {pageNum}
+                              </Link>
                             );
                           }
                           if (pageNum === currentPage - 2 || pageNum === currentPage + 2) return <span key={pageNum} className="text-gray-400">...</span>;
@@ -311,9 +311,9 @@ export default async function CatalogoPage({
 
             {/* BANNER DE PEDIDO ESPECIAL (FUERA DE LA CONDICIÓN PARA QUE SIEMPRE SALGA) */}
             <div className="mt-auto pt-8">
-               <SpecialOrderBanner />
+              <SpecialOrderBanner />
             </div>
-            
+
           </main>
 
         </div>
