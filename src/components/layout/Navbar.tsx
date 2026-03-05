@@ -122,7 +122,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-3 group z-50">
               <div className="relative h-16 w-16 md:h-24 md:w-24 -my-4 transition-transform duration-300 group-hover:scale-110 filter drop-shadow-lg">
                 <Image
-                  src="/logo-bass.png"
+                  src="/logo-basso.png"
                   alt="BassOrilla Logo"
                   fill
                   className="object-contain"

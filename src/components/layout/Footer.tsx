@@ -37,7 +37,7 @@ export default function Footer() {
           <div className="space-y-6">
             <Link href="/" className="inline-block relative w-24 h-24 mb-2">
                <Image 
-                 src="/logo-bass.png" 
+                 src="/logo-basso.png" 
                  alt="BassOrilla Logo" 
                  fill 
                  className="object-contain"

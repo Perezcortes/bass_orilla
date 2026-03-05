@@ -71,7 +71,7 @@ const handleLogout = async () => {
 
           <div className="relative w-24 h-24 mb-3">
              <Image 
-               src="/logo-bass.png" 
+               src="/logo-basso.png" 
                alt="BassOrilla Logo" 
                fill 
                className="object-contain"

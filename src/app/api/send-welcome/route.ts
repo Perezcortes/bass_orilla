@@ -18,8 +18,8 @@ export async function POST(request: Request) {
       },
     });
 
-    // Esto busca el archivo en tu proyecto real: /public/logo-bass.png
-    const logoPath = path.join(process.cwd(), 'public', 'logo-bass.png');
+    // Esto busca el archivo en tu proyecto real: /public/logo-basso.png
+    const logoPath = path.join(process.cwd(), 'public', 'logo-basso.png');
     const logoContent = fs.readFileSync(logoPath);
 
     // 3. Plantilla HTML
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       html: htmlContent,
       attachments: [
         {
-          filename: 'logo-bass.png',
+          filename: 'logo-basso.png',
           content: logoContent,
           cid: 'basslogo' // Este ID debe coincidir exactamente con el src="cid:basslogo" del HTML
         }
