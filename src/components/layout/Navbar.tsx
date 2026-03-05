@@ -7,6 +7,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/utils/supabase/client'; // <-- Necesario para actualizar el perfil
+import GlobalSearch from '../navigation/GlobalSearch';
+
 import {
   ShoppingCart,
   Menu,
@@ -157,9 +159,7 @@ export default function Navbar() {
 
             {/* --- ICONOS Y ACCIONES --- */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <button className="hidden sm:flex p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
-                <Search size={20} />
-              </button>
+              <GlobalSearch />
 
               <button
                 onClick={toggleTheme}
