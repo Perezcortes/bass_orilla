@@ -33,6 +33,7 @@ export default function AdminLayoutClient({
     { name: 'Usuarios', href: '/dashboard/usuarios', icon: Users },
     { name: 'Catálogo', href: '/dashboard/catalogo', icon: ShoppingBag },
     { name: 'Publicidad', href: '/dashboard/publicidad', icon: Megaphone },
+    { name: 'Suscriptores', href: '/dashboard/suscriptores', icon: Users },
   ];
 
 const handleLogout = async () => {

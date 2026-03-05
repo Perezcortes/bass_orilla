@@ -62,7 +62,7 @@ export async function POST(request: Request) {
                 <tr>
                   <td align="center">
                     <a href="https://bassorilla.com/sorteos" style="display: inline-block; padding: 14px 28px; background-color: #F9B824; color: #000000; font-weight: bold; text-decoration: none; border-radius: 50px;">
-                      Ver Sorteos
+                      Ver Rifas
                     </a>
                   </td>
                 </tr>

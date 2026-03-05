@@ -58,7 +58,7 @@ export default function Hero() {
             className="group w-full sm:w-auto bg-action-yellow text-[#1A1A1A] px-6 py-4 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(249,184,36,0.5)] hover:bg-yellow-300 hover:scale-105 transition-all flex items-center justify-center gap-2"
           >
             <Ticket className="group-hover:rotate-12 transition-transform" size={20} />
-            Ver Sorteos
+            Ver Rifas
           </Link>
           <Link
             href="/catalogo"

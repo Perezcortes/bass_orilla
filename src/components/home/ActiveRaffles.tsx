@@ -24,7 +24,7 @@ export default async function ActiveRaffles() {
           <div>
             <span className="text-splash-blue font-bold tracking-wider text-sm uppercase">Lo más nuevo</span>
             <h2 className="text-4xl md:text-5xl font-display font-black text-gray-900 dark:text-white mt-2">
-              Novedades y <span className="text-transparent bg-clip-text bg-gradient-to-r from-action-yellow to-yellow-600">Sorteos</span>
+              Novedades y <span className="text-transparent bg-clip-text bg-gradient-to-r from-action-yellow to-yellow-600">Rifas</span>
             </h2>
           </div>
           <Link href="/publicaciones" className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-action-yellow transition-colors font-semibold group">
@@ -51,7 +51,7 @@ export default async function ActiveRaffles() {
           <div className="bg-gray-50 dark:bg-[#1A1A1A] rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800 p-12 text-center flex flex-col items-center justify-center animate-fade-in-up">
             <Newspaper className="text-gray-400 mb-4" size={40} />
             <h3 className="text-2xl font-display font-black text-gray-900 dark:text-white mb-2">Próximamente</h3>
-            <p className="text-gray-500">Aún no hay anuncios ni sorteos activos.</p>
+            <p className="text-gray-500">Aún no hay anuncios ni rifas activas.</p>
           </div>
         )}
       </div>

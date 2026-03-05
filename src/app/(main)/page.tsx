@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Mail, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/server'; // <-- Importamos Supabase
+import NewsletterForm from '@/components/home/NewsletterForm'; // <-- Importamos el formulario de newsletter
 
 export const revalidate = 60; // Revalida la página cada 60 segundos para mostrar nuevos productos
 
@@ -209,19 +210,7 @@ const brands = [
           <p className="text-gray-200 text-lg mb-10 max-w-xl mx-auto font-medium drop-shadow-md">
             Recibe notificaciones sobre nuevos sorteos, ganadores y ofertas exclusivas de equipo directamente en tu correo.
           </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-            <input 
-              className="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-action-yellow focus:bg-black/50 backdrop-blur-md transition-all shadow-inner" 
-              placeholder="Tu correo electrónico" 
-              type="email" 
-            />
-            <button 
-              className="bg-action-yellow text-black px-8 py-4 rounded-xl font-bold hover:bg-yellow-400 hover:scale-105 transition-all shadow-lg shadow-action-yellow/20 flex items-center justify-center gap-2" 
-              type="submit"
-            >
-              Suscribirse
-            </button>
-          </form>
+          <NewsletterForm />
           <p className="text-gray-400 text-xs mt-6 font-medium tracking-wide">
             Sin spam. Solo pura pesca.
           </p>
