@@ -1,31 +1,10 @@
 import ProductCard from '@/components/products/ProductCard';
-import { PackageX, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { PackageX, ChevronRight } from 'lucide-react';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import CatalogoFiltersClient from './CatalogoFiltersClient';
+import CatalogoSidebarClient from './CatalogoSidebarClient';
 import SpecialOrderBanner from '@/components/products/SpecialOrderBanner';
-
-const CATALOG_STRUCTURE: Record<string, Record<string, string[]>> = {
-  "Agua Dulce": {
-    "Carretes": ["Spinning", "Casting", "Spincast"],
-    "Cañas": ["Spinning", "Casting"],
-    "Combos": ["Combos Spinning", "Combos Casting", "Combos Spincast"],
-    "Señuelos": ["Plásticos", "Curricanes", "Swimbaits", "Spinnerbaits y Buzzbaits", "Jigs y Chatterbaits", "Cucharillas"],
-    "Terminal Tackle": ["Anzuelos y Tercias", "Plomos y Tungstenos", "Jigheads", "Esencias"]
-  },
-  "Ropa y Accesorios": {
-    "Ropa": ["Buff", "Camisas y jerseys", "Gorras y Sombreros", "Guantes", "Chalecos Salvavidas", "Pantalones y Shorts"],
-    "Accesorios Varios": ["Básculas", "Herramientas", "Red de Pesca", "Cuchillos y Navajas", "Otros Accesorios"],
-    "Almacenaje": ["Almacenaje para Señuelos", "Almacenaje para Cañas", "Almacenaje para Carretes"],
-    "Lentes Polarizados": ["General"]
-  },
-  "Líneas para Pescar": {
-    "Monofilamento": ["General"],
-    "Fluorocarbono": ["General"],
-    "Trenzado": ["General"],
-    "Líderes": ["General"]
-  }
-};
 
 export default async function CatalogoPage({
   searchParams,
@@ -37,27 +16,27 @@ export default async function CatalogoPage({
 
   // OBTENER PARÁMETROS
   const currentPage = Number(resolvedParams.page) || 1;
-  const pageSize = 16; // Subimos a 16 para que se vean filas pares (4x4 o 2x8)
+  const pageSize = 16;
   const currentDept = resolvedParams.dept;
   const currentCat = resolvedParams.cat;
   const currentSubcat = resolvedParams.subcat;
-  const currentSearch = resolvedParams.q; // Lo que escribe el usuario
+  const currentSearch = resolvedParams.q;
   const minPrice = resolvedParams.minPrice ? Number(resolvedParams.minPrice) : null;
   const maxPrice = resolvedParams.maxPrice ? Number(resolvedParams.maxPrice) : null;
   const currentSort = resolvedParams.sort || 'recent';
 
   // CONSTRUIR CONSULTA
-  let query = supabase.from('products').select('*', { count: 'exact' }).eq('is_active', true);
+  let query;
+  if (currentSearch) {
+    query = supabase.rpc('search_products', { search_term: currentSearch }, { count: 'exact' });
+  } else {
+    query = supabase.from('products').select('*', { count: 'exact' }).eq('is_active', true);
+  }
 
   // Filtros de Categoría
   if (currentDept) query = query.eq('department', currentDept);
   if (currentCat) query = query.eq('category', currentCat);
   if (currentSubcat) query = query.eq('subcategory', currentSubcat);
-
-  // Filtro de Búsqueda de Texto Avanzada (Busca en título, marca, descripción o categoría)
-  if (currentSearch) {
-    query = query.or(`title.ilike.%${currentSearch}%,brand.ilike.%${currentSearch}%,description.ilike.%${currentSearch}%,category.ilike.%${currentSearch}%`);
-  }
 
   // Filtro de Rango de Precios
   if (minPrice !== null) query = query.gte('price', minPrice);
@@ -102,9 +81,9 @@ export default async function CatalogoPage({
 
         {/* Breadcrumb Automático */}
         <nav className="flex items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium overflow-x-auto whitespace-nowrap pb-2">
-          <Link href="/" className="hover:text-action-yellow transition-colors">Inicio</Link>
+          <Link href="/" className="hover:text-splash-blue transition-colors">Inicio</Link>
           <ChevronRight size={14} className="mx-2 shrink-0" />
-          <Link href="/catalogo" className={`hover:text-action-yellow transition-colors ${!currentDept && !currentSearch ? 'text-gray-900 dark:text-white font-bold' : ''}`}>Catálogo</Link>
+          <Link href="/catalogo" className={`hover:text-splash-blue transition-colors ${!currentDept && !currentSearch ? 'text-gray-900 dark:text-white font-bold' : ''}`}>Catálogo</Link>
 
           {currentSearch && (
             <>
@@ -116,7 +95,7 @@ export default async function CatalogoPage({
           {!currentSearch && currentDept && (
             <>
               <ChevronRight size={14} className="mx-2 shrink-0" />
-              <Link href={buildUrl({ dept: currentDept, cat: undefined, subcat: undefined, page: '1' })} className={`hover:text-action-yellow transition-colors ${!currentCat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
+              <Link href={buildUrl({ dept: currentDept, cat: undefined, subcat: undefined, page: '1' })} className={`hover:text-splash-blue transition-colors ${!currentCat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
                 {currentDept}
               </Link>
             </>
@@ -124,7 +103,7 @@ export default async function CatalogoPage({
           {!currentSearch && currentCat && (
             <>
               <ChevronRight size={14} className="mx-2 shrink-0" />
-              <Link href={buildUrl({ cat: currentCat, subcat: undefined, page: '1' })} className={`hover:text-action-yellow transition-colors ${!currentSubcat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
+              <Link href={buildUrl({ cat: currentCat, subcat: undefined, page: '1' })} className={`hover:text-splash-blue transition-colors ${!currentSubcat ? 'text-gray-900 dark:text-white font-bold' : ''}`}>
                 {currentCat}
               </Link>
             </>
@@ -148,7 +127,6 @@ export default async function CatalogoPage({
             </p>
           </div>
 
-          {/* Componente Cliente para la Búsqueda y Ordenamiento */}
           <CatalogoFiltersClient
             currentSearch={currentSearch}
             currentSort={currentSort}
@@ -159,83 +137,23 @@ export default async function CatalogoPage({
 
         <div className="flex flex-col lg:flex-row gap-8">
 
-          {/* SIDEBAR - TAXONOMÍA Y FILTROS */}
-          <aside className="w-full lg:w-72 flex-shrink-0">
-            <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-800">
-                <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                  <SlidersHorizontal size={20} className="text-action-yellow" /> Categorías
-                </h3>
-                {(currentDept || currentSearch || minPrice !== null) && (
-                  <Link href="/catalogo" className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
-                    Limpiar Todo
-                  </Link>
-                )}
-              </div>
-
-              {/* Acordeón de Categorías */}
-              <div className="space-y-6">
-                {Object.keys(CATALOG_STRUCTURE).map((dept) => {
-                  const isDeptActive = currentDept === dept;
-
-                  return (
-                    <div key={dept} className="border-b border-gray-50 dark:border-gray-800/50 pb-4 last:border-0 last:pb-0">
-                      <Link
-                        href={buildUrl({ dept, cat: undefined, subcat: undefined, page: '1' })}
-                        className={`block font-bold uppercase tracking-wider text-sm mb-3 transition-colors ${isDeptActive ? 'text-action-yellow' : 'text-gray-900 dark:text-white hover:text-action-yellow'}`}
-                      >
-                        {dept}
-                      </Link>
-
-                      {(isDeptActive || !currentDept) && (
-                        <div className="space-y-4 pl-3 border-l-2 border-gray-100 dark:border-gray-800">
-                          {Object.keys(CATALOG_STRUCTURE[dept]).map((cat) => {
-                            const isCatActive = currentCat === cat;
-
-                            return (
-                              <div key={cat}>
-                                <Link
-                                  href={buildUrl({ dept, cat, subcat: undefined, page: '1' })}
-                                  className={`block text-sm font-medium transition-colors ${isCatActive ? 'text-action-yellow' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-                                >
-                                  {cat}
-                                </Link>
-
-                                {isCatActive && (
-                                  <div className="mt-2 space-y-2 pl-3">
-                                    {CATALOG_STRUCTURE[dept][cat].map((subcat) => {
-                                      const isSubActive = currentSubcat === subcat;
-                                      return (
-                                        <Link
-                                          key={subcat}
-                                          href={buildUrl({ dept, cat, subcat, page: '1' })}
-                                          className={`block text-xs transition-colors ${isSubActive ? 'text-action-yellow font-bold' : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-                                        >
-                                          • {subcat}
-                                        </Link>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </aside>
+          {/* NUEVO SIDEBAR COLAPSABLE (Client Component) */}
+          <CatalogoSidebarClient
+            currentDept={currentDept}
+            currentCat={currentCat}
+            currentSubcat={currentSubcat}
+            currentSearch={currentSearch}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            currentSort={currentSort}
+          />
 
           {/* CUADRÍCULA DE PRODUCTOS */}
-          <main className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">
             {safeProducts.length > 0 ? (
               <>
-                {/* AQUI ESTÁ LA MAGIA MÓVIL: grid-cols-2 */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-                  {safeProducts.map((product) => (
+                  {safeProducts.map((product: any) => (
                     <ProductCard key={product.id} {...product} />
                   ))}
                 </div>
@@ -258,13 +176,13 @@ export default async function CatalogoPage({
                         {[...Array(totalPages)].map((_, i) => {
                           const pageNum = i + 1;
                           const isCurrent = pageNum === currentPage;
-                          // Mostrar solo 5 páginas alrededor de la actual para no desbordar
+                          
                           if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
                             return (
                               <Link
                                 key={pageNum}
                                 href={buildUrl({ page: pageNum.toString() })}
-                                className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent ? 'bg-action-yellow text-[#1A1A1A] shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-[#1A1A1A]'}`}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent ? 'bg-splash-blue text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-[#1A1A1A]'}`}
                               >
                                 {pageNum}
                               </Link>
@@ -301,20 +219,19 @@ export default async function CatalogoPage({
                   No hay resultados
                 </h3>
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
-                  Proximamente publicaremos estos productos!.
+                  Intenta buscar con otros términos o eliminar algunos filtros.
                 </p>
-                <Link href="/catalogo" className="bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm sm:text-base font-bold hover:bg-action-yellow dark:hover:bg-action-yellow hover:text-black transition-colors">
+                <Link href="/catalogo" className="bg-splash-blue text-white px-6 py-3 rounded-xl text-sm sm:text-base font-bold hover:bg-[#3ca1d0] transition-colors">
                   Ver todo el catálogo
                 </Link>
               </div>
             )}
 
-            {/* BANNER DE PEDIDO ESPECIAL (FUERA DE LA CONDICIÓN PARA QUE SIEMPRE SALGA) */}
             <div className="mt-auto pt-8">
               <SpecialOrderBanner />
             </div>
 
-          </main>
+          </div>
 
         </div>
       </div>

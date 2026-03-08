@@ -53,13 +53,12 @@ export default function GlobalSearch() {
       setIsLoading(true);
       const supabase = createClient();
       
-      // Búsqueda difusa en múltiples columnas (Título, Marca, Descripción, Categoría)
-      const { data } = await supabase
-        .from('products')
-        .select('id, title, slug, brand, price, discount_price, variants')
-        .or(`title.ilike.%${query}%,brand.ilike.%${query}%,description.ilike.%${query}%,category.ilike.%${query}%`)
-        .eq('is_active', true)
-        .limit(5); // Solo mostramos los 5 mejores resultados rápidos
+      // Llamamos a la función RPC que creamos en Supabase para buscar en el JSONB
+      const { data, error } = await supabase
+        .rpc('search_products', { search_term: query })
+        .limit(5);
+
+      if (error) console.error("Error en búsqueda:", error);
 
       setResults(data || []);
       setIsLoading(false);
@@ -97,9 +96,9 @@ export default function GlobalSearch() {
         onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-full sm:rounded-lg bg-transparent sm:bg-gray-100 sm:dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors border border-transparent sm:border-gray-200 sm:dark:border-gray-800 group"
       >
-        <Search size={18} className="group-hover:text-action-yellow transition-colors" />
+        <Search size={18} className="group-hover:text-splash-blue transition-colors" />
         <span className="hidden lg:inline text-sm font-medium text-gray-500">Buscar equipo...</span>
-        <span className="hidden lg:inline text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 ml-2">⌘K</span>
+        <span className="hidden lg:inline text-[10px] font-bold px-1.5 py-0.5 rounded bg-splash-blue/10 text-splash-blue ml-2">⌘K</span>
       </button>
 
       {/* Modal de Búsqueda (Command Palette) */}
@@ -112,12 +111,12 @@ export default function GlobalSearch() {
             
             {/* Buscador Input */}
             <form onSubmit={handleSearchSubmit} className="relative flex items-center border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-[#151515]">
-              <Search size={24} className="absolute left-4 text-action-yellow" />
+              <Search size={24} className="absolute left-4 text-splash-blue" />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Busca marcas, señuelos, técnicas (ej. flipping)..."
+                placeholder="Busca marcas, colores (ej. Bama Craw)..."
                 className="w-full pl-12 pr-12 py-5 bg-transparent text-lg text-gray-900 dark:text-white outline-none placeholder-gray-400 font-medium"
               />
               <button 
@@ -133,15 +132,15 @@ export default function GlobalSearch() {
             <div className="max-h-[60vh] overflow-y-auto">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-                  <Loader2 size={32} className="animate-spin text-action-yellow mb-4" />
+                  <Loader2 size={32} className="animate-spin text-splash-blue mb-4" />
                   <p>Buscando en el catálogo...</p>
                 </div>
               ) : query.trim() === '' ? (
                 <div className="py-8 px-6 text-center">
                   <p className="text-gray-500 text-sm">Empieza a escribir para ver resultados instantáneos.</p>
                   <div className="flex flex-wrap justify-center gap-2 mt-4">
-                    {['Shimano', 'Googan', 'Swimbaits', 'Flipping'].map(term => (
-                      <button key={term} onClick={() => setQuery(term)} className="px-3 py-1 bg-gray-100 dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-full text-xs text-gray-600 dark:text-gray-400 hover:text-action-yellow transition-colors">
+                    {['Shimano', 'Googan', 'Green Pumpkin', 'Flipping'].map(term => (
+                      <button key={term} onClick={() => setQuery(term)} className="px-3 py-1 bg-gray-100 dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-full text-xs text-gray-600 dark:text-gray-400 hover:text-splash-blue hover:bg-splash-blue/5 hover:border-splash-blue/30 transition-all">
                         {term}
                       </button>
                     ))}
@@ -157,11 +156,11 @@ export default function GlobalSearch() {
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition-colors group"
                     >
-                      <div className="relative w-14 h-14 bg-white rounded-lg flex-shrink-0 border border-gray-100 dark:border-gray-800 group-hover:border-action-yellow transition-colors overflow-hidden">
+                      <div className="relative w-14 h-14 bg-white rounded-lg flex-shrink-0 border border-gray-100 dark:border-gray-800 group-hover:border-splash-blue transition-colors overflow-hidden">
                         <Image src={getProductImage(product.variants)} alt={product.title} fill className="object-contain p-1" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-action-yellow uppercase tracking-wide">{product.brand}</p>
+                        <p className="text-xs font-bold text-splash-blue uppercase tracking-wide">{product.brand}</p>
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{product.title}</p>
                       </div>
                       <div className="text-right pr-2">
@@ -179,7 +178,7 @@ export default function GlobalSearch() {
                   
                   <button 
                     onClick={handleSearchSubmit}
-                    className="w-full mt-2 p-3 text-sm font-bold text-center text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white bg-gray-50 dark:bg-[#1A1A1A] hover:bg-action-yellow dark:hover:bg-action-yellow rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-2 p-3 text-sm font-bold text-center text-white bg-splash-blue hover:bg-[#3ca1d0] rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
                   >
                     Ver todos los resultados para "{query}" <ArrowRight size={16} />
                   </button>
@@ -188,7 +187,7 @@ export default function GlobalSearch() {
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                   <PackageX size={48} className="text-gray-300 dark:text-gray-700 mb-4" />
                   <p className="text-gray-900 dark:text-white font-medium mb-1">No encontramos resultados para "{query}"</p>
-                  <p className="text-gray-500 text-sm">Intenta buscar por técnica, marca o tipo de señuelo.</p>
+                  <p className="text-gray-500 text-sm">Intenta buscar por color, técnica o marca.</p>
                 </div>
               )}
             </div>

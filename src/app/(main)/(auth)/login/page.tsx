@@ -212,7 +212,7 @@ export default function LoginPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="bo-input"
-              placeholder="tu@correo.com"
+              placeholder="bassorilla@gmail.com"
             />
           </div>
 

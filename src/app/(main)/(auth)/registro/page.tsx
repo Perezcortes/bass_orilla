@@ -248,13 +248,13 @@ export default function RegisterPage() {
             <div className="bo-field">
               <label className="bo-label" htmlFor="reg-name">Nombre completo</label>
               <input id="reg-name" type="text" required value={fullName}
-                onChange={e => setFullName(e.target.value)} className="bo-input" placeholder="Juan García" />
+                onChange={e => setFullName(e.target.value)} className="bo-input" placeholder="Bass Orilla" />
             </div>
 
             <div className="bo-field">
               <label className="bo-label" htmlFor="reg-email">Correo electrónico</label>
               <input id="reg-email" type="email" required value={email}
-                onChange={e => setEmail(e.target.value)} className="bo-input" placeholder="tu@correo.com" />
+                onChange={e => setEmail(e.target.value)} className="bo-input" placeholder="bassorilla@gmail.com" />
             </div>
 
             <div className="bo-field">

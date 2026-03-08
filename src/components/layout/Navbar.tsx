@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { createClient } from '@/utils/supabase/client'; // <-- Necesario para actualizar el perfil
+import { createClient } from '@/utils/supabase/client'; 
 import GlobalSearch from '../navigation/GlobalSearch';
 
 import {
@@ -15,7 +15,6 @@ import {
   X,
   Sun,
   Moon,
-  Search,
   User,
   LogOut,
   LayoutDashboard,
@@ -85,13 +84,11 @@ export default function Navbar() {
     const supabase = createClient();
 
     try {
-      // 1. Actualizamos la metadata de Auth
       const { error: authError } = await supabase.auth.updateUser({
         data: { full_name: editName }
       });
       if (authError) throw authError;
 
-      // 2. Actualizamos la tabla de perfiles (profiles)
       const { error: dbError } = await supabase
         .from('profiles')
         .update({ full_name: editName })
@@ -100,7 +97,6 @@ export default function Navbar() {
 
       setUpdateMsg({ type: 'success', text: 'Perfil actualizado correctamente.' });
       
-      // Cerramos el modal después de 2 segundos
       setTimeout(() => {
         setShowProfileModal(false);
         setUpdateMsg(null);
@@ -118,47 +114,55 @@ export default function Navbar() {
     <>
       <nav className="sticky top-0 z-40 bg-bone-white/95 dark:bg-carbon-black/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          
+          {/* AGRUPAMOS TODO CON UN GAP SEGURO */}
+          <div className="flex justify-between items-center h-20 gap-4 lg:gap-8">
 
-            {/* --- LOGO GRANDE --- */}
-            <Link href="/" className="flex items-center gap-3 group z-50">
-              <div className="relative h-16 w-16 md:h-24 md:w-24 -my-4 transition-transform duration-300 group-hover:scale-110 filter drop-shadow-lg">
-                <Image
-                  src="/logo-basso.png"
-                  alt="BassOrilla Logo"
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 768px) 64px, 96px"
-                  priority
-                />
+            {/* === LADO IZQUIERDO: LOGO Y MENÚ === */}
+            <div className="flex items-center gap-6 xl:gap-12">
+              
+              {/* --- LOGO GRANDE (con shrink-0 para que no se apachurre) --- */}
+              <Link href="/" className="flex items-center gap-3 group z-50 shrink-0">
+                <div className="relative h-16 w-16 md:h-24 md:w-24 -my-4 transition-transform duration-300 group-hover:scale-110 filter drop-shadow-lg">
+                  <Image
+                    src="/logo-basso.png"
+                    alt="BassOrilla Logo"
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 64px, 96px"
+                    priority
+                  />
+                </div>
+
+                <div className="hidden sm:block">
+                  <h1 className="font-display font-black text-2xl lg:text-3xl tracking-tight text-carbon-black dark:text-bone-white leading-none">
+                    Bass<span className="text-action-yellow">Orilla</span>
+                  </h1>
+                  {/* Se mantiene el Action Yellow original en el subtexto */}
+                  <span className="text-[10px] lg:text-xs font-bold text-action-yellow tracking-widest uppercase block mt-0.5">
+                    Rifas y Artículos
+                  </span>
+                </div>
+              </Link>
+
+              {/* --- MENÚ DE ESCRITORIO (Ahora visible desde 'lg' para evitar choques) --- */}
+              <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="font-medium text-sm xl:text-base text-gray-700 dark:text-gray-300 hover:text-splash-blue dark:hover:text-splash-blue transition-colors relative group"
+                  >
+                    {link.label}
+                    {/* Subrayado animado en Splash Blue */}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-splash-blue transition-all group-hover:w-full"></span>
+                  </Link>
+                ))}
               </div>
-
-              <div className="hidden md:block">
-                <h1 className="font-display font-black text-2xl lg:text-3xl tracking-tight text-carbon-black dark:text-bone-white leading-none">
-                  Bass<span className="text-action-yellow">Orilla</span>
-                </h1>
-                <span className="text-[10px] lg:text-xs font-bold text-action-yellow tracking-widest uppercase block mt-0.5">
-                  Rifas y Articulos
-                </span>
-              </div>
-            </Link>
-
-            {/* --- MENÚ DE ESCRITORIO --- */}
-            <div className="hidden md:flex items-center space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="font-medium text-sm lg:text-base text-gray-700 dark:text-gray-300 hover:text-action-yellow dark:hover:text-action-yellow transition-colors relative group"
-                >
-                  {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-action-yellow transition-all group-hover:w-full"></span>
-                </Link>
-              ))}
             </div>
 
-            {/* --- ICONOS Y ACCIONES --- */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* === LADO DERECHO: BUSCADOR, ICONOS Y ACCIONES === */}
+            <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
               <GlobalSearch />
 
               <button
@@ -193,14 +197,12 @@ export default function Navbar() {
                       </div>
 
                       <div className="py-1 border-b border-gray-100 dark:border-gray-800">
-                        {/* OPCIÓN ADMIN */}
                         {user.user_metadata?.role === 'admin' && (
                           <Link href="/dashboard" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                            <LayoutDashboard size={16} className="mr-3 text-action-yellow" /> Panel Admin
+                            <LayoutDashboard size={16} className="mr-3 text-splash-blue" /> Panel Admin
                           </Link>
                         )}
                         
-                        {/* OPCIÓN MI PERFIL (Para todos) */}
                         <button 
                           onClick={() => {
                             setIsProfileOpen(false);
@@ -208,7 +210,7 @@ export default function Navbar() {
                           }} 
                           className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                         >
-                          <User size={16} className="mr-3 text-action-yellow" /> Mi Perfil
+                          <User size={16} className="mr-3 text-splash-blue" /> Mi Perfil
                         </button>
                       </div>
 
@@ -221,7 +223,7 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                <Link href="/login" className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-action-yellow py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5">
+                <Link href="/login" className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-splash-blue py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5">
                   <User size={20} />
                   <span className="hidden lg:inline">Entrar</span>
                 </Link>
@@ -232,30 +234,31 @@ export default function Navbar() {
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors group"
               >
-                <ShoppingCart size={20} />
+                <ShoppingCart size={20} className="group-hover:text-action-yellow transition-colors" />
                 {totalItems > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 bg-action-yellow rounded-full text-[10px] font-bold text-carbon-black flex items-center justify-center transform translate-x-1 -translate-y-1">
+                  <span className="absolute top-0 right-0 h-4 w-4 bg-action-yellow rounded-full text-[10px] font-bold text-carbon-black flex items-center justify-center transform translate-x-1 -translate-y-1 shadow-sm">
                     {totalItems}
                   </span>
                 )}
               </button>
 
-              <Link href="/publicaciones" className="hidden md:flex bg-action-yellow hover:bg-yellow-500 text-carbon-black px-6 py-2 rounded-full font-bold text-sm shadow-lg">
+              <Link href="/publicaciones" className="hidden lg:flex bg-action-yellow hover:bg-yellow-500 text-carbon-black px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:scale-105 transition-transform">
                 Participar
               </Link>
 
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-lg text-carbon-black dark:text-bone-white">
+              {/* Botón Hamburguesa ajustado a 'lg' */}
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 rounded-lg text-carbon-black dark:text-bone-white hover:bg-gray-100 dark:hover:bg-gray-800">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
 
-          {/* --- MENÚ MÓVIL --- */}
+          {/* --- MENÚ MÓVIL (Ajustado a 'lg') --- */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-800 absolute left-0 right-0 bg-bone-white dark:bg-carbon-black shadow-xl z-40 px-4">
+            <div className="lg:hidden py-4 border-t border-gray-200 dark:border-gray-800 absolute left-0 right-0 bg-bone-white dark:bg-carbon-black shadow-xl z-40 px-4">
               {user && (
                 <div className="mb-4 p-4 bg-gray-100 dark:bg-[#1A1A1A] rounded-xl flex items-center gap-3 border border-gray-200 dark:border-gray-800">
-                  <div className="w-10 h-10 rounded-full bg-[#2d5a27] flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-splash-blue flex items-center justify-center text-white font-bold text-sm">
                     {getInitials(user.user_metadata?.full_name)}
                   </div>
                   <div className="overflow-hidden">
@@ -267,7 +270,7 @@ export default function Navbar() {
 
               <div className="flex flex-col space-y-2">
                 {navLinks.map((link) => (
-                  <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-splash-blue transition-colors">
                     {link.label}
                   </Link>
                 ))}
@@ -276,7 +279,7 @@ export default function Navbar() {
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
                     {user.user_metadata?.role === 'admin' && (
                       <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-                        <LayoutDashboard size={18} className="mr-3 text-action-yellow" /> Panel Admin
+                        <LayoutDashboard size={18} className="mr-3 text-splash-blue" /> Panel Admin
                       </Link>
                     )}
                     <button 
@@ -286,7 +289,7 @@ export default function Navbar() {
                       }} 
                       className="w-full flex items-center px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
-                      <User size={18} className="mr-3 text-action-yellow" /> Mi Perfil
+                      <User size={18} className="mr-3 text-splash-blue" /> Mi Perfil
                     </button>
                     <button onClick={handleSignOut} className="w-full flex items-center px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10">
                       <LogOut size={18} className="mr-3" /> Cerrar Sesión
@@ -295,7 +298,7 @@ export default function Navbar() {
                 ) : (
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
                     <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-                      <User size={18} className="mr-3" /> Iniciar Sesión
+                      <User size={18} className="mr-3 text-splash-blue" /> Iniciar Sesión
                     </Link>
                   </div>
                 )}
@@ -312,7 +315,7 @@ export default function Navbar() {
             
             <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-800">
               <h3 className="font-display font-bold text-xl text-gray-900 dark:text-white flex items-center gap-2">
-                <User className="text-action-yellow" size={24} /> Mi Perfil
+                <User className="text-splash-blue" size={24} /> Mi Perfil
               </h3>
               <button 
                 onClick={() => setShowProfileModal(false)}
@@ -350,7 +353,7 @@ export default function Navbar() {
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   placeholder="Ej. Juan Pérez"
-                  className="w-full px-4 py-3 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:border-action-yellow focus:ring-1 focus:ring-action-yellow outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:border-splash-blue focus:ring-1 focus:ring-splash-blue outline-none transition-all"
                 />
               </div>
 
@@ -358,7 +361,7 @@ export default function Navbar() {
                 <button 
                   type="submit"
                   disabled={isUpdating}
-                  className="w-full bg-[#2d5a27] hover:bg-[#1e3c1a] disabled:bg-gray-400 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                  className="w-full bg-splash-blue hover:bg-[#3ca1d0] disabled:bg-gray-400 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                 >
                   {isUpdating ? 'Guardando...' : <><Save size={18} /> Guardar Cambios</>}
                 </button>

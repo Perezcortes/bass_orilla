@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Footer() {
@@ -12,7 +12,7 @@ export default function Footer() {
         { label: 'Inicio', href: '/' },
         { label: 'Sorteos Activos', href: '/publicaciones' },
         { label: 'Catálogo', href: '/catalogo' },
-        { label: 'Ganadores Anteriores', href: '/ganadores' },
+        //{ label: 'Ganadores Anteriores', href: '/ganadores' },
       ],
     },
     {
@@ -45,24 +45,51 @@ export default function Footer() {
             </Link>
             
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-xs">
-              La plataforma líder en Rifas y Articulos de pesca deportiva en México. 
+              La plataforma líder en Rifas y Artículos de pesca deportiva en México. 
               Llevamos el mejor equipo a tus manos con total seguridad y confianza.
             </p>
 
             <div className="flex gap-4 pt-2">
               <a
                 href="https://www.facebook.com/share/184sLsrBDh/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-action-yellow hover:border-action-yellow hover:text-black dark:hover:text-carbon-black transition-all duration-300 group"
                 aria-label="Facebook"
               >
                 <Facebook size={18} className="group-hover:scale-110 transition-transform" />
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/@Bassorilla"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-action-yellow hover:border-action-yellow hover:text-black dark:hover:text-carbon-black transition-all duration-300 group"
-                aria-label="Instagram"
+                aria-label="YouTube"
               >
-                <Instagram size={18} className="group-hover:scale-110 transition-transform" />
+                <Youtube size={18} className="group-hover:scale-110 transition-transform" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@bassorilla"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-action-yellow hover:border-action-yellow hover:text-black dark:hover:text-carbon-black transition-all duration-300 group"
+                aria-label="TikTok"
+              >
+                {/* SVG de TikTok manual para mantener el estilo de Lucide Icons */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="group-hover:scale-110 transition-transform"
+                >
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
               </a>
             </div>
           </div>

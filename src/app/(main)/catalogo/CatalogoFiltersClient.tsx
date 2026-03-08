@@ -54,16 +54,16 @@ export default function CatalogoFiltersClient({
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
       
       {/* Barra de Búsqueda */}
-      <form onSubmit={handleSearchSubmit} className="relative flex-1 lg:w-80">
-        <button type="submit" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-action-yellow">
+      <form onSubmit={handleSearchSubmit} className="relative flex-1 lg:w-80 group">
+        <button type="submit" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-splash-blue transition-colors">
           <Search size={18} />
         </button>
         <input 
           type="text" 
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Buscar Shimano, curricanes..." 
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1A1A1A] text-sm text-gray-900 dark:text-white focus:outline-none focus:border-action-yellow transition-colors shadow-sm" 
+          placeholder="Buscar colores, marcas, curricanes..." 
+          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1A1A1A] text-sm text-gray-900 dark:text-white focus:outline-none focus:border-splash-blue transition-colors shadow-sm" 
         />
       </form>
 
@@ -71,7 +71,7 @@ export default function CatalogoFiltersClient({
       <div className="flex gap-2">
         <button 
           onClick={() => setShowFilters(!showFilters)}
-          className="lg:hidden flex-1 flex items-center justify-center gap-2 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-xl py-3 text-sm font-bold text-gray-700 dark:text-gray-300"
+          className="lg:hidden flex-1 flex items-center justify-center gap-2 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-xl py-3 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-splash-blue transition-colors"
         >
           <Filter size={16} /> Filtros de Precio
         </button>
@@ -80,7 +80,7 @@ export default function CatalogoFiltersClient({
         <select 
           value={currentSort}
           onChange={(e) => updateUrl('sort', e.target.value)}
-          className="flex-1 lg:w-auto bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 text-sm text-gray-900 dark:text-white rounded-xl focus:outline-none focus:border-action-yellow py-3 px-4 transition-colors shadow-sm appearance-none cursor-pointer"
+          className="flex-1 lg:w-auto bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 text-sm text-gray-900 dark:text-white rounded-xl focus:outline-none focus:border-splash-blue py-3 px-4 transition-colors shadow-sm appearance-none cursor-pointer hover:border-splash-blue/50"
         >
           <option value="recent">Más Recientes</option>
           <option value="ofertas">Solo Ofertas</option>
@@ -96,7 +96,7 @@ export default function CatalogoFiltersClient({
           placeholder="Min $" 
           value={localMin}
           onChange={(e) => setLocalMin(e.target.value)}
-          className="w-20 py-1.5 px-2 bg-gray-50 dark:bg-black rounded-lg text-xs text-center focus:outline-none focus:border-action-yellow border border-transparent"
+          className="w-20 py-1.5 px-2 bg-gray-50 dark:bg-black rounded-lg text-xs text-center focus:outline-none focus:ring-1 focus:ring-splash-blue border border-transparent"
         />
         <span className="text-gray-400">-</span>
         <input 
@@ -104,11 +104,11 @@ export default function CatalogoFiltersClient({
           placeholder="Max $" 
           value={localMax}
           onChange={(e) => setLocalMax(e.target.value)}
-          className="w-20 py-1.5 px-2 bg-gray-50 dark:bg-black rounded-lg text-xs text-center focus:outline-none focus:border-action-yellow border border-transparent"
+          className="w-20 py-1.5 px-2 bg-gray-50 dark:bg-black rounded-lg text-xs text-center focus:outline-none focus:ring-1 focus:ring-splash-blue border border-transparent"
         />
         <button 
           onClick={applyPriceFilter}
-          className="bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-action-yellow dark:hover:bg-action-yellow transition-colors"
+          className="bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-splash-blue dark:hover:bg-splash-blue dark:hover:text-white transition-colors"
         >
           Ir
         </button>
