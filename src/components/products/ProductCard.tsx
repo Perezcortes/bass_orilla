@@ -44,11 +44,9 @@ export default function ProductCard({
 
   return (
     <div className="group bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 overflow-hidden hover:-translate-y-1 flex flex-col h-full">
-      {/* CAMBIO 1: dark:bg-[#1A1A1A] en lugar de dark:bg-gray-900 y borde dark:border-gray-800 */}
       
-      {/* SECCIÓN DE IMAGEN */}
-      {/* CAMBIO 2: Fondo de la imagen en dark:bg-[#111110] (casi negro) para mayor profundidad */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-white dark:bg-[#111110] p-2 sm:p-4">
+      {/* SECCIÓN DE IMAGEN (Corregida para Safari/iPhone y usando Splash Blue) */}
+      <div className="relative w-full h-[160px] sm:h-[200px] md:h-[220px] overflow-hidden bg-white dark:bg-[#111110] p-2 sm:p-4 flex-shrink-0">
         {discount_price && (
           <span className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded uppercase tracking-wider shadow-md">
             OFERTA
@@ -59,13 +57,13 @@ export default function ProductCard({
           src={mainImage}
           alt={title}
           fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           className="object-contain p-2 sm:p-4 transform group-hover:scale-105 transition-transform duration-500"
         />
 
         {/* Overlay Hover */}
         <div className="hidden sm:flex absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-end p-4">
-          {/* CAMBIO 3: Botón Ver detalles en dark mode tiene fondo dark:bg-[#2A2A2A] neutro */}
-          <Link href={`/catalogo/${slug}`} className="w-full bg-white dark:bg-[#2A2A2A] text-gray-900 dark:text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-[#4d7c0f] hover:text-white dark:hover:bg-[#4d7c0f] dark:hover:text-white transition-colors flex justify-center items-center gap-2">
+          <Link href={`/catalogo/${slug}`} className="w-full bg-white dark:bg-[#2A2A2A] text-gray-900 dark:text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-splash-blue hover:text-white dark:hover:bg-splash-blue dark:hover:text-white transition-colors flex justify-center items-center gap-2">
             <Eye size={18} /> Ver Detalles
           </Link>
         </div>
@@ -74,7 +72,7 @@ export default function ProductCard({
       {/* SECCIÓN DE CONTENIDO */}
       <div className="p-3 sm:p-5 flex-1 flex flex-col">
         <div className="flex-1">
-          <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 sm:mb-1 line-clamp-1">
+          <p className="text-[10px] sm:text-xs font-bold text-splash-blue uppercase tracking-wider mb-0.5 sm:mb-1 line-clamp-1">
             {brand}
           </p>
           <h3 className="font-display font-bold text-sm sm:text-lg text-gray-900 dark:text-white leading-tight line-clamp-2 mb-1 sm:mb-2" title={title}>
@@ -91,7 +89,7 @@ export default function ProductCard({
             <div className="flex gap-1 items-center">
               {variants.filter(v => v.colorName && v.colorName.trim() !== '').slice(0, 3).map((variant, index) => (
                 <div key={index} className="relative w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm overflow-hidden bg-white" title={variant.colorName}>
-                  <Image src={variant.imageUrl || '/placeholder.png'} alt={variant.colorName} fill className="object-cover" />
+                  <Image src={variant.imageUrl || '/placeholder.png'} alt={variant.colorName} fill className="object-cover" sizes="24px" />
                 </div>
               ))}
               {variants.filter(v => v.colorName && v.colorName.trim() !== '').length > 3 && (
@@ -124,7 +122,7 @@ export default function ProductCard({
 
           <Link
             href={`/catalogo/${slug}`}
-            className="w-full xl:w-auto bg-[#4d7c0f] hover:bg-[#1e3c1a] text-white px-3 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md group/btn"
+            className="w-full xl:w-auto bg-splash-blue hover:bg-[#3ca1d0] text-white px-3 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md group/btn"
           >
             <ShoppingCart size={14} className="group-hover/btn:rotate-12 transition-transform" />
             <span className="xl:hidden">Ver</span>
@@ -134,7 +132,7 @@ export default function ProductCard({
         {/* Status de Stock */}
         {!isAvailable && (
           <div className="mt-2 text-center">
-            <span className="text-[10px] sm:text-xs bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold uppercase">
+            <span className="text-[10px] sm:text-xs bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-2 py-0.5 sm:px-3 py-1 rounded-full font-bold uppercase tracking-wide">
               Agotado
             </span>
           </div>
