@@ -48,7 +48,7 @@ export default function ProductCard({
       
       {/* SECCIÓN DE IMAGEN */}
       {/* CAMBIO 2: Fondo de la imagen en dark:bg-[#111110] (casi negro) para mayor profundidad */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-white dark:bg-[#111110] p-2 sm:p-4">
+      <div className="relative aspect-[4/3] min-h-[180px] w-full overflow-hidden bg-white dark:bg-[#111110] p-2 sm:p-4">
         {discount_price && (
           <span className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded uppercase tracking-wider shadow-md">
             OFERTA
